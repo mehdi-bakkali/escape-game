@@ -1,6 +1,6 @@
 # 🎮 Infiltration 2026 - Virtual Escape Game
 
-Virtual Escape Game designed for a computer club fair. Players must infiltrate a secure server by solving 4 progressive puzzles.
+Virtual Escape Game designed for Addictech. Players must infiltrate a secure server by solving 4 progressive puzzles.
 
 ## 🚀 Online Access
 
