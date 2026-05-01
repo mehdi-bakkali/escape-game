@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Infiltration 2026 - Secure Server</title>
     <style>
+        /* Language switcher button */
+        .lang-switcher {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1001;
+        }
+
+        .lang-btn {
+            background: var(--terminal-bg);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+
         /* ============================================
            CSS - CYBER-TERMINAL STYLE
            ============================================ */
@@ -640,6 +664,9 @@
 <body>
     <div class="container">
         <header>
+            <div class="lang-switcher">
+                <button class="lang-btn" onclick="toggleLanguage()" id="langToggle">FR</button>
+            </div>
             <h1>⚡ Infiltration 2026 ⚡</h1>
             <p class="subtitle">Secure Server - Access Level: RESTRICTED</p>
         </header>
@@ -648,37 +675,37 @@
         <div class="progress-container">
             <div class="progress-bar" id="progressBar" style="width: 0%"></div>
             <div class="progress-text">
-                <span id="progressLevel">Level 0/4</span>
+                <span id="progressLevel" data-i18n="level_x_of_4">Level 0/4</span>
                 <span id="progressPercent">0%</span>
             </div>
         </div>
 
         <!-- Timer -->
         <div class="timer-display">
-            <div class="timer-label">Elapsed Time</div>
+            <div class="timer-label" data-i18n="elapsed_time">Elapsed Time</div>
             <div class="timer-value" id="timerDisplay">00:00</div>
         </div>
 
         <!-- WELCOME SCREEN -->
         <div id="screenWelcome" class="screen active">
             <div class="content-box">
-                <h2>🔐 MISSION BRIEFING</h2>
-                <p>Welcome, recruit.</p>
-                <p>Our organization has intercepted communications from a highly secure server. Your mission: infiltrate the system, bypass security protocols, and retrieve the <strong>"TOP_SECRET.dat"</strong> file.</p>
-                <p>Four security layers await you. Each puzzle solved brings you closer to the system core.</p>
+                <h2 data-i18n="mission_briefing">🔐 MISSION BRIEFING</h2>
+                <p data-i18n="welcome_recruit">Welcome, recruit.</p>
+                <p data-i18n="mission_desc">Our organization has intercepted communications from a highly secure server. Your mission: infiltrate the system, bypass security protocols, and retrieve the <strong>"TOP_SECRET.dat"</strong> file.</p>
+                <p data-i18n="four_layers">Four security layers await you. Each puzzle solved brings you closer to the system core.</p>
                 <p style="color: var(--warning-color); margin-top: 20px;">
-                    ⚠️ <strong>WARNING:</strong> The system has a self-destruct protocol. You have <strong>35 minutes</strong> maximum before all data is erased.
+                    ⚠️ <strong data-i18n="warning_label">WARNING:</strong> <span data-i18n="time_warning">The system has a self-destruct protocol. You have <strong>35 minutes</strong> maximum before all data is erased.</span>
                 </p>
             </div>
-            <button onclick="game.startLevel(1)">START INFILTRATION</button>
+            <button onclick="game.startLevel(1)" data-i18n="start_infiltration">START INFILTRATION</button>
         </div>
 
         <!-- LEVEL 1 - TERMINAL -->
         <div id="screenLevel1" class="screen">
             <div class="content-box">
-                <h2>💻 LAYER 1: COMMAND LINE</h2>
-                <p>You have access to a remote terminal. The first code is hidden in a file somewhere in the system.</p>
-                <p>Available commands: <code style="color: var(--accent-color);">ls</code>, <code style="color: var(--accent-color);">cd [dir]</code>, <code style="color: var(--accent-color);">cat [file]</code>, <code style="color: var(--accent-color);">pwd</code></p>
+                <h2 data-i18n="layer1_title">💻 LAYER 1: COMMAND LINE</h2>
+                <p data-i18n="layer1_desc">You have access to a remote terminal. The first code is hidden in a file somewhere in the system.</p>
+                <p data-i18n="layer1_commands">Available commands: <code style="color: var(--accent-color);">ls</code>, <code style="color: var(--accent-color);">cd [dir]</code>, <code style="color: var(--accent-color);">cat [file]</code>, <code style="color: var(--accent-color);">pwd</code></p>
 
                 <div class="terminal" id="terminal1">
                     <div class="terminal-line output">Connection established to remote server...</div>
@@ -689,6 +716,7 @@
                 <div style="margin-top: 15px; display: flex; gap: 10px;">
                     <span class="terminal-prompt">$ </span>
                     <input type="text" class="terminal-input" id="terminalInput1"
+                           data-i18n-placeholder="enter_command"
                            placeholder="Enter a command..."
                            onkeypress="if(event.key==='Enter') level1.executeCommand()">
                 </div>
@@ -696,81 +724,81 @@
 
             <div id="feedback1" class="feedback"></div>
 
-            <button onclick="level1.validateCode()" id="btnValidate1">VALIDATE CODE</button>
-            <button class="hint-btn" onclick="level1.showHint()">NEED HELP?</button>
+            <button onclick="level1.validateCode()" id="btnValidate1" data-i18n="validate_code">VALIDATE CODE</button>
+            <button class="hint-btn" onclick="level1.showHint()" data-i18n="need_help">NEED HELP?</button>
 
             <div class="hint-zone" id="hintZone1">
-                <div class="hint hidden" id="hint1a">📍 Hint 1: Start by exploring the current directory with <code>ls</code>, then navigate to <code>/secure</code></div>
-                <div class="hint hidden" id="hint1b">📍 Hint 2: The secret file is called <code>access_code.txt</code> and is located in <code>/secure/classified</code></div>
+                <div class="hint hidden" id="hint1a" data-i18n="hint1a">📍 Hint 1: Start by exploring the current directory with <code>ls</code>, then navigate to <code>/secure</code></div>
+                <div class="hint hidden" id="hint1b" data-i18n="hint1b">📍 Hint 2: The secret file is called <code>access_code.txt</code> and is located in <code>/secure/classified</code></div>
             </div>
         </div>
 
         <!-- LEVEL 2 - CIPHER -->
         <div id="screenLevel2" class="screen">
             <div class="content-box">
-                <h2>🔐 LAYER 2: ENCRYPTED MESSAGE</h2>
-                <p>Message intercepted on the internal network:</p>
+                <h2 data-i18n="layer2_title">🔐 LAYER 2: ENCRYPTED MESSAGE</h2>
+                <p data-i18n="layer2_desc">Message intercepted on the internal network:</p>
                 <div class="cipher-wheel">
-                    <div style="color: var(--dim-color); font-size: 0.8rem; margin-bottom: 10px;">Original message:</div>
+                    <div style="color: var(--dim-color); font-size: 0.8rem; margin-bottom: 10px;" data-i18n="original_message">Original message:</div>
                     <div class="cipher-display" id="cipherOriginal"></div>
 
                     <div class="shift-control">
                         <button class="shift-btn secondary" onclick="level2.shift(-1)">◀</button>
-                        <div class="shift-value">Shift: <span id="shiftValue">0</span></div>
+                        <div class="shift-value"><span data-i18n="shift">Shift</span>: <span id="shiftValue">0</span></div>
                         <button class="shift-btn secondary" onclick="level2.shift(1)">▶</button>
                     </div>
 
-                    <div style="color: var(--dim-color); font-size: 0.8rem; margin-bottom: 10px;">Decoded message:</div>
+                    <div style="color: var(--dim-color); font-size: 0.8rem; margin-bottom: 10px;" data-i18n="decoded_message">Decoded message:</div>
                     <div class="cipher-display" id="cipherDecoded"></div>
                 </div>
 
-                <p>The password is the decoded message (no spaces, uppercase).</p>
+                <p data-i18n="layer2_instruction">The password is the decoded message (no spaces, uppercase).</p>
             </div>
 
-            <input type="text" id="inputLevel2" placeholder="Enter the decoded password..." autocomplete="off">
+            <input type="text" id="inputLevel2" data-i18n-placeholder="enter_decoded_password" placeholder="Enter the decoded password..." autocomplete="off">
 
             <div id="feedback2" class="feedback"></div>
 
-            <button onclick="level2.validate()">VALIDATE PASSWORD</button>
-            <button class="hint-btn" onclick="level2.showHint()">NEED HELP?</button>
+            <button onclick="level2.validate()" data-i18n="validate_password">VALIDATE PASSWORD</button>
+            <button class="hint-btn" onclick="level2.showHint()" data-i18n="need_help">NEED HELP?</button>
 
             <div class="hint-zone" id="hintZone2">
-                <div class="hint hidden" id="hint2a">📍 Hint 1: This is a Caesar cipher. Try different shifts until the text makes sense.</div>
-                <div class="hint hidden" id="hint2b">📍 Hint 2: The decoded word is a common 4-letter computer term.</div>
+                <div class="hint hidden" id="hint2a" data-i18n="hint2a">📍 Hint 1: This is a Caesar cipher. Try different shifts until the text makes sense.</div>
+                <div class="hint hidden" id="hint2b" data-i18n="hint2b">📍 Hint 2: The decoded word is a common 4-letter computer term.</div>
             </div>
         </div>
 
         <!-- LEVEL 3 - DATA -->
         <div id="screenLevel3" class="screen">
             <div class="content-box">
-                <h2>📊 LAYER 3: DATA ANOMALY</h2>
-                <p>Corrupted seismic database. One value doesn't follow the logical sequence.</p>
-                <p>Find the anomaly and enter its <strong>position (row-column)</strong> as the password (e.g., 2-3).</p>
+                <h2 data-i18n="layer3_title">📊 LAYER 3: DATA ANOMALY</h2>
+                <p data-i18n="layer3_desc">Corrupted seismic database. One value doesn't follow the logical sequence.</p>
+                <p data-i18n="layer3_instruction">Find the anomaly and enter its <strong>position (row-column)</strong> as the password (e.g., 2-3).</p>
 
                 <div class="data-grid" id="dataGrid"></div>
 
-                <p style="font-size: 0.85rem; color: var(--dim-color);">
+                <p style="font-size: 0.85rem; color: var(--dim-color);" data-i18n="layer3_tip">
                     💡 Click on the suspicious value to select it, then validate.
                 </p>
             </div>
 
             <div id="feedback3" class="feedback"></div>
 
-            <button onclick="level3.validate()" id="btnValidate3">VALIDATE POSITION</button>
-            <button class="hint-btn" onclick="level3.showHint()">NEED HELP?</button>
+            <button onclick="level3.validate()" id="btnValidate3" data-i18n="validate_position">VALIDATE POSITION</button>
+            <button class="hint-btn" onclick="level3.showHint()" data-i18n="need_help">NEED HELP?</button>
 
             <div class="hint-zone" id="hintZone3">
-                <div class="hint hidden" id="hint3a">📍 Hint 1: Each row follows a simple mathematical pattern. Look for the number that breaks the sequence.</div>
-                <div class="hint hidden" id="hint3b">📍 Hint 2: Row 1: +2, Row 2: +3, Row 3: ×2, Row 4: prime numbers. The anomaly is at position 2-4.</div>
+                <div class="hint hidden" id="hint3a" data-i18n="hint3a">📍 Hint 1: Each row follows a simple mathematical pattern. Look for the number that breaks the sequence.</div>
+                <div class="hint hidden" id="hint3b" data-i18n="hint3b">📍 Hint 2: Row 1: +2, Row 2: +3, Row 3: ×2, Row 4: prime numbers. The anomaly is at position 2-4.</div>
             </div>
         </div>
 
         <!-- LEVEL 4 - CIRCUITS -->
         <div id="screenLevel4" class="screen">
             <div class="content-box">
-                <h2>⚡ LAYER 4: LOGIC GATES</h2>
-                <p>Activate the correct switches so the current reaches the final output.</p>
-                <p class="circuit-label">Required configuration: All outputs must be ACTIVE (green)</p>
+                <h2 data-i18n="layer4_title">⚡ LAYER 4: LOGIC GATES</h2>
+                <p data-i18n="layer4_desc">Activate the correct switches so the current reaches the final output.</p>
+                <p class="circuit-label" data-i18n="layer4_config">Required configuration: All outputs must be ACTIVE (green)</p>
 
                 <div class="circuit-board">
                     <div class="logic-row">
@@ -800,24 +828,24 @@
                     </div>
 
                     <div style="text-align: center; margin-top: 20px;">
-                        <div class="logic-gate" style="width: 80px; height: 50px; font-size: 0.8rem;">FINAL OR</div>
+                        <div class="logic-gate" style="width: 80px; height: 50px; font-size: 0.8rem;" data-i18n="final_or">FINAL OR</div>
                         <div class="logic-output" id="outFinal" style="width: 50px; height: 50px; margin: 10px auto;"></div>
                     </div>
                 </div>
 
-                <p style="font-size: 0.85rem; color: var(--dim-color);">
+                <p style="font-size: 0.85rem; color: var(--dim-color);" data-i18n="layer4_tip">
                     💡 AND = both must be ON | OR = at least 1 ON | NOT = inverts the state
                 </p>
             </div>
 
             <div id="feedback4" class="feedback"></div>
 
-            <button onclick="level4.validate()" id="btnValidate4">VALIDATE CONFIGURATION</button>
-            <button class="hint-btn" onclick="level4.showHint()">NEED HELP?</button>
+            <button onclick="level4.validate()" id="btnValidate4" data-i18n="validate_configuration">VALIDATE CONFIGURATION</button>
+            <button class="hint-btn" onclick="level4.showHint()" data-i18n="need_help">NEED HELP?</button>
 
             <div class="hint-zone" id="hintZone4">
-                <div class="hint hidden" id="hint4a">📍 Hint 1: For AND, activate both switches. For OR, one is enough. For NOT, leave it OFF.</div>
-                <div class="hint hidden" id="hint4b">📍 Hint 2: Row 1: A1+B1 ON | Row 2: A2 or B2 ON | Row 3: A3 OFF</div>
+                <div class="hint hidden" id="hint4a" data-i18n="hint4a">📍 Hint 1: For AND, activate both switches. For OR, one is enough. For NOT, leave it OFF.</div>
+                <div class="hint hidden" id="hint4b" data-i18n="hint4b">📍 Hint 2: Row 1: A1+B1 ON | Row 2: A2 or B2 ON | Row 3: A3 OFF</div>
             </div>
         </div>
 
@@ -825,33 +853,33 @@
         <div id="screenSuccess" class="screen">
             <div class="success-screen">
                 <div class="success-icon">🎉</div>
-                <h2 style="color: var(--primary-color); margin-bottom: 20px;">INFILTRATION SUCCESSFUL!</h2>
-                <p>Congratulations, recruit! You've accessed the system core and retrieved the TOP_SECRET.dat file.</p>
+                <h2 style="color: var(--primary-color); margin-bottom: 20px;" data-i18n="infiltration_successful">INFILTRATION SUCCESSFUL!</h2>
+                <p data-i18n="congratulations">Congratulations, recruit! You've accessed the system core and retrieved the TOP_SECRET.dat file.</p>
 
                 <div class="final-code" id="finalCode">ADMIN-2026</div>
 
-                <p style="color: var(--warning-color);">
+                <p style="color: var(--warning-color);" data-i18n="show_code">
                     Show this code to the staff to unlock the candy box!
                 </p>
 
                 <div class="stats-grid">
                     <div class="stat-box">
                         <div class="stat-value" id="statTime">00:00</div>
-                        <div class="stat-label">Total Time</div>
+                        <div class="stat-label" data-i18n="total_time">Total Time</div>
                     </div>
                     <div class="stat-box">
                         <div class="stat-value" id="statHints">0</div>
-                        <div class="stat-label">Hints Used</div>
+                        <div class="stat-label" data-i18n="hints_used">Hints Used</div>
                     </div>
                 </div>
 
-                <button class="secondary" onclick="game.restart()">PLAY AGAIN</button>
+                <button class="secondary" onclick="game.restart()" data-i18n="play_again">PLAY AGAIN</button>
             </div>
         </div>
 
         <footer>
-            <p>Escape Game - Computer Club 2026</p>
-            <p>Version 1.0 | Terminal Build</p>
+            <p data-i18n="footer_credit">Escape Game - Computer Club 2026</p>
+            <p data-i18n="footer_version">Version 1.0 | Terminal Build</p>
         </footer>
     </div>
 
@@ -859,6 +887,200 @@
         /* ============================================
            JAVASCRIPT - GAME LOGIC (STATE MACHINE)
            ============================================ */
+
+        // ==========================================
+        // INTERNATIONALIZATION (i18n)
+        // ==========================================
+        const translations = {
+            en: {
+                level_x_of_4: "Level 0/4",
+                elapsed_time: "Elapsed Time",
+                mission_briefing: "🔐 MISSION BRIEFING",
+                welcome_recruit: "Welcome, recruit.",
+                mission_desc: "Our organization has intercepted communications from a highly secure server. Your mission: infiltrate the system, bypass security protocols, and retrieve the <strong>\"TOP_SECRET.dat\"</strong> file.",
+                four_layers: "Four security layers await you. Each puzzle solved brings you closer to the system core.",
+                warning_label: "WARNING:",
+                time_warning: "The system has a self-destruct protocol. You have <strong>35 minutes</strong> maximum before all data is erased.",
+                start_infiltration: "START INFILTRATION",
+                layer1_title: "💻 LAYER 1: COMMAND LINE",
+                layer1_desc: "You have access to a remote terminal. The first code is hidden in a file somewhere in the system.",
+                layer1_commands: "Available commands: <code style=\"color: var(--accent-color);\">ls</code>, <code style=\"color: var(--accent-color);\">cd [dir]</code>, <code style=\"color: var(--accent-color);\">cat [file]</code>, <code style=\"color: var(--accent-color);\">pwd</code>",
+                enter_command: "Enter a command...",
+                validate_code: "VALIDATE CODE",
+                need_help: "NEED HELP?",
+                hint1a: "📍 Hint 1: Start by exploring the current directory with <code>ls</code>, then navigate to <code>/secure</code>",
+                hint1b: "📍 Hint 2: The secret file is called <code>access_code.txt</code> and is located in <code>/secure/classified</code>",
+                layer2_title: "🔐 LAYER 2: ENCRYPTED MESSAGE",
+                layer2_desc: "Message intercepted on the internal network:",
+                original_message: "Original message:",
+                shift: "Shift",
+                decoded_message: "Decoded message:",
+                layer2_instruction: "The password is the decoded message (no spaces, uppercase).",
+                enter_decoded_password: "Enter the decoded password...",
+                validate_password: "VALIDATE PASSWORD",
+                hint2a: "📍 Hint 1: This is a Caesar cipher. Try different shifts until the text makes sense.",
+                hint2b: "📍 Hint 2: The decoded word is a common 4-letter computer term.",
+                layer3_title: "📊 LAYER 3: DATA ANOMALY",
+                layer3_desc: "Corrupted seismic database. One value doesn't follow the logical sequence.",
+                layer3_instruction: "Find the anomaly and enter its <strong>position (row-column)</strong> as the password (e.g., 2-3).",
+                layer3_tip: "💡 Click on the suspicious value to select it, then validate.",
+                validate_position: "VALIDATE POSITION",
+                hint3a: "📍 Hint 1: Each row follows a simple mathematical pattern. Look for the number that breaks the sequence.",
+                hint3b: "📍 Hint 2: Row 1: +2, Row 2: +3, Row 3: ×2, Row 4: prime numbers. The anomaly is at position 2-4.",
+                layer4_title: "⚡ LAYER 4: LOGIC GATES",
+                layer4_desc: "Activate the correct switches so the current reaches the final output.",
+                layer4_config: "Required configuration: All outputs must be ACTIVE (green)",
+                final_or: "FINAL OR",
+                layer4_tip: "💡 AND = both must be ON | OR = at least 1 ON | NOT = inverts the state",
+                validate_configuration: "VALIDATE CONFIGURATION",
+                hint4a: "📍 Hint 1: For AND, activate both switches. For OR, one is enough. For NOT, leave it OFF.",
+                hint4b: "📍 Hint 2: Row 1: A1+B1 ON | Row 2: A2 or B2 ON | Row 3: A3 OFF",
+                infiltration_successful: "INFILTRATION SUCCESSFUL!",
+                congratulations: "Congratulations, recruit! You've accessed the system core and retrieved the TOP_SECRET.dat file.",
+                show_code: "Show this code to the staff to unlock the candy box!",
+                total_time: "Total Time",
+                hints_used: "Hints Used",
+                play_again: "PLAY AGAIN",
+                footer_credit: "Escape Game - Computer Club 2026",
+                footer_version: "Version 1.0 | Terminal Build",
+                // Game feedback messages
+                code_accepted: "✓ CODE ACCEPTED - ACCESS GRANTED",
+                code_incorrect: "✗ CODE INCORRECT - ACCESS DENIED",
+                password_accepted: "✓ PASSWORD ACCEPTED",
+                password_incorrect: "✗ PASSWORD INCORRECT",
+                anomaly_identified: "✓ ANOMALY IDENTIFIED",
+                not_the_anomaly: "✗ NOT THE ANOMALY",
+                select_cell_first: "✗ SELECT A CELL FIRST",
+                configuration_validated: "✓ CONFIGURATION VALIDATED - CORE ACCESS GRANTED",
+                configuration_incorrect: "✗ CONFIGURATION INCORRECT",
+                times_up: "⚠️ TIME'S UP! The system has erased all data. Try again!",
+                connection_established: "Connection established to remote server...",
+                system_ready: "System ready. Type 'help' for assistance.",
+                enter_commands_below: "Enter your commands below:",
+                unknown_command: "Unknown command:",
+                type_help: "Type 'help' for assistance.",
+                help_commands: "Available commands: ls, cd [dir], cat [file], pwd, clear",
+                directory_inaccessible: "Error: directory inaccessible",
+                no_such_file: "No such file or directory",
+                usage_cat: "Usage: cat [filename]"
+            },
+            fr: {
+                level_x_of_4: "Niveau 0/4",
+                elapsed_time: "Temps écoulé",
+                mission_briefing: "🔐 BRIEFING DE MISSION",
+                welcome_recruit: "Bienvenue, recrue.",
+                mission_desc: "Notre organisation a intercepté des communications provenant d'un serveur hautement sécurisé. Votre mission : infiltrer le système, contourner les protocoles de sécurité et récupérer le fichier <strong>\"TOP_SECRET.dat\"</strong>.",
+                four_layers: "Quatre couches de sécurité vous attendent. Chaque énigme résolue vous rapproche du cœur du système.",
+                warning_label: "ATTENTION :",
+                time_warning: "Le système dispose d'un protocole d'autodestruction. Vous avez <strong>35 minutes</strong> maximum avant que toutes les données ne soient effacées.",
+                start_infiltration: "COMMENCER L'INFILTRATION",
+                layer1_title: "💻 COUCHE 1 : LIGNE DE COMMANDE",
+                layer1_desc: "Vous avez accès à un terminal distant. Le premier code est caché dans un fichier quelque part dans le système.",
+                layer1_commands: "Commandes disponibles : <code style=\"color: var(--accent-color);\">ls</code>, <code style=\"color: var(--accent-color);\">cd [dir]</code>, <code style=\"color: var(--accent-color);\">cat [fichier]</code>, <code style=\"color: var(--accent-color);\">pwd</code>",
+                enter_command: "Entrez une commande...",
+                validate_code: "VALIDER LE CODE",
+                need_help: "BESOIN D'AIDE ?",
+                hint1a: "📍 Indice 1 : Commencez par explorer le répertoire courant avec <code>ls</code>, puis naviguez vers <code>/secure</code>",
+                hint1b: "📍 Indice 2 : Le fichier secret s'appelle <code>access_code.txt</code> et se trouve dans <code>/secure/classified</code>",
+                layer2_title: "🔐 COUCHE 2 : MESSAGE CRYPTÉ",
+                layer2_desc: "Message intercepté sur le réseau interne :",
+                original_message: "Message original :",
+                shift: "Décalage",
+                decoded_message: "Message décodé :",
+                layer2_instruction: "Le mot de passe est le message décodé (sans espaces, en majuscules).",
+                enter_decoded_password: "Entrez le mot de passe décodé...",
+                validate_password: "VALIDER LE MOT DE PASSE",
+                hint2a: "📍 Indice 1 : Ceci est un chiffre de César. Essayez différents décalages jusqu'à ce que le texte ait un sens.",
+                hint2b: "📍 Indice 2 : Le mot décodé est un terme informatique courant de 4 lettres.",
+                layer3_title: "📊 COUCHE 3 : ANOMALIE DE DONNÉES",
+                layer3_desc: "Base de données sismique corrompue. Une valeur ne suit pas la séquence logique.",
+                layer3_instruction: "Trouvez l'anomalie et entrez sa <strong>position (ligne-colonne)</strong> comme mot de passe (par ex. 2-3).",
+                layer3_tip: "💡 Cliquez sur la valeur suspecte pour la sélectionner, puis validez.",
+                validate_position: "VALIDER LA POSITION",
+                hint3a: "📍 Indice 1 : Chaque ligne suit un motif mathématique simple. Cherchez le nombre qui brise la séquence.",
+                hint3b: "📍 Indice 2 : Ligne 1: +2, Ligne 2: +3, Ligne 3: ×2, Ligne 4: nombres premiers. L'anomalie est à la position 2-4.",
+                layer4_title: "⚡ COUCHE 4 : PORTES LOGIQUES",
+                layer4_desc: "Activez les bons interrupteurs pour que le courant atteigne la sortie finale.",
+                layer4_config: "Configuration requise : Toutes les sorties doivent être ACTIVES (vertes)",
+                final_or: "OU FINAL",
+                layer4_tip: "💡 ET = les deux doivent être ACTIFS | OU = au moins 1 ACTIF | NON = inverse l'état",
+                validate_configuration: "VALIDER LA CONFIGURATION",
+                hint4a: "📍 Indice 1 : Pour ET, activez les deux interrupteurs. Pour OU, un seul suffit. Pour NON, laissez-le DÉSACTIVÉ.",
+                hint4b: "📍 Indice 2 : Ligne 1: A1+B1 ACTIF | Ligne 2: A2 ou B2 ACTIF | Ligne 3: A3 DÉSACTIVÉ",
+                infiltration_successful: "INFILTRATION RÉUSSIE !",
+                congratulations: "Félicitations, recrue ! Vous avez accédé au cœur du système et récupéré le fichier TOP_SECRET.dat.",
+                show_code: "Montrez ce code au personnel pour débloquer la boîte à bonbons !",
+                total_time: "Temps total",
+                hints_used: "Indices utilisés",
+                play_again: "REJOUER",
+                footer_credit: "Escape Game - Computer Club 2026",
+                footer_version: "Version 1.0 | Build Terminal",
+                // Game feedback messages
+                code_accepted: "✓ CODE ACCEPTÉ - ACCÈS AUTORISÉ",
+                code_incorrect: "✗ CODE INCORRECT - ACCÈS REFUSÉ",
+                password_accepted: "✓ MOT DE PASSE ACCEPTÉ",
+                password_incorrect: "✗ MOT DE PASSE INCORRECT",
+                anomaly_identified: "✓ ANOMALIE IDENTIFIÉE",
+                not_the_anomaly: "✗ CE N'EST PAS L'ANOMALIE",
+                select_cell_first: "✗ SÉLECTIONNEZ D'ABORD UNE CELLULE",
+                configuration_validated: "✓ CONFIGURATION VALIDÉE - ACCÈS AU CŒUR AUTORISÉ",
+                configuration_incorrect: "✗ CONFIGURATION INCORRECTE",
+                times_up: "⚠️ TEMPS ÉCOULÉ ! Le système a effacé toutes les données. Réessayez !",
+                connection_established: "Connexion établie au serveur distant...",
+                system_ready: "Système prêt. Tapez 'help' pour obtenir de l'aide.",
+                enter_commands_below: "Entrez vos commandes ci-dessous :",
+                unknown_command: "Commande inconnue :",
+                type_help: "Tapez 'help' pour obtenir de l'aide.",
+                help_commands: "Commandes disponibles : ls, cd [dir], cat [fichier], pwd, clear",
+                directory_inaccessible: "Erreur : répertoire inaccessible",
+                no_such_file: "Aucun fichier ou répertoire de ce type",
+                usage_cat: "Utilisation : cat [fichier]"
+            }
+        };
+
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'fr' : 'en';
+            document.getElementById('langToggle').textContent = currentLang === 'en' ? 'FR' : 'EN';
+            document.documentElement.lang = currentLang;
+            applyTranslations();
+        }
+
+        function applyTranslations() {
+            // Translate elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            });
+
+            // Translate placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[currentLang][key]) {
+                    el.placeholder = translations[currentLang][key];
+                }
+            });
+
+            // Update progress level if on welcome screen
+            const progressLevel = document.getElementById('progressLevel');
+            if (currentLang === 'fr' && progressLevel.textContent.startsWith('Level')) {
+                const levelNum = progressLevel.textContent.match(/(\d+)\/4/);
+                if (levelNum) {
+                    progressLevel.textContent = `Niveau ${levelNum[1]}/4`;
+                }
+            } else if (currentLang === 'en' && progressLevel.textContent.startsWith('Niveau')) {
+                const levelNum = progressLevel.textContent.match(/(\d+)\/4/);
+                if (levelNum) {
+                    progressLevel.textContent = `Level ${levelNum[1]}/4`;
+                }
+            }
+
+            // Save preference
+            localStorage.setItem('escapeGameLang', currentLang);
+        }
 
         // ==========================================
         // CONFIGURATION - EASILY CUSTOMIZABLE
@@ -937,6 +1159,13 @@
 
             // Initialize
             init() {
+                // Load saved language preference
+                const savedLang = localStorage.getItem('escapeGameLang');
+                if (savedLang && (savedLang === 'en' || savedLang === 'fr')) {
+                    currentLang = savedLang;
+                    document.getElementById('langToggle').textContent = savedLang === 'en' ? 'FR' : 'EN';
+                }
+                applyTranslations();
                 this.updateProgress(0);
                 this.startTimer();
                 console.log("Game initialized - Infiltration mode activated");
@@ -970,7 +1199,8 @@
             updateProgress(level) {
                 const percent = (level / 4) * 100;
                 document.getElementById('progressBar').style.width = percent + '%';
-                document.getElementById('progressLevel').textContent = `Level ${level}/4`;
+                const levelLabel = currentLang === 'en' ? `Level ${level}/4` : `Niveau ${level}/4`;
+                document.getElementById('progressLevel').textContent = levelLabel;
                 document.getElementById('progressPercent').textContent = Math.round(percent) + '%';
             },
 
@@ -1011,7 +1241,24 @@
             // Show feedback
             showFeedback(level, message, isSuccess) {
                 const feedbackEl = document.getElementById(`feedback${level}`);
-                feedbackEl.textContent = message;
+                // Use translated message if available
+                let translatedMsg = message;
+                const msgKey = message.replace(/[^a-zA-Z0-9\s\-✓✗]/g, '').trim().replace(/\s+/g, '_').toLowerCase();
+                const transKey = {
+                    '✓ CODE ACCEPTED - ACCESS GRANTED': 'code_accepted',
+                    '✗ CODE INCORRECT - ACCESS DENIED': 'code_incorrect',
+                    '✓ PASSWORD ACCEPTED': 'password_accepted',
+                    '✗ PASSWORD INCORRECT': 'password_incorrect',
+                    '✓ ANOMALY IDENTIFIED': 'anomaly_identified',
+                    '✗ NOT THE ANOMALY': 'not_the_anomaly',
+                    '✗ SELECT A CELL FIRST': 'select_cell_first',
+                    '✓ CONFIGURATION VALIDATED - CORE ACCESS GRANTED': 'configuration_validated',
+                    '✗ CONFIGURATION INCORRECT': 'configuration_incorrect'
+                }[message];
+                if (transKey && translations[currentLang][transKey]) {
+                    translatedMsg = translations[currentLang][transKey];
+                }
+                feedbackEl.textContent = translatedMsg;
                 feedbackEl.className = `feedback visible ${isSuccess ? 'success' : 'error'}`;
 
                 setTimeout(() => {
@@ -1045,7 +1292,7 @@
             // Game Over (time elapsed)
             gameOver() {
                 clearInterval(this.timerInterval);
-                alert("⚠️ TIME'S UP! The system has erased all data. Try again!");
+                alert(translations[currentLang].times_up);
                 this.restart();
             },
 
@@ -1101,15 +1348,15 @@
                 this.currentPath = '/';
                 document.getElementById('terminalInput1').value = '';
                 document.getElementById('terminalInput1').focus();
-                this.log("System ready. Type 'help' for assistance.", 'output');
+                this.log(translations[currentLang].system_ready, 'output');
             },
 
             reset() {
                 this.currentPath = '/';
                 document.getElementById('terminal1').innerHTML = `
-                    <div class="terminal-line output">Connection established to remote server...</div>
+                    <div class="terminal-line output">${translations[currentLang].connection_established}</div>
                     <div class="terminal-line output">System: SecureOS v4.2</div>
-                    <div class="terminal-line success">Enter your commands below:</div>
+                    <div class="terminal-line success">${translations[currentLang].enter_commands_below}</div>
                 `;
                 document.getElementById('hintZone1').classList.remove('visible');
                 document.getElementById('hint1a').className = 'hint hidden';
@@ -1140,7 +1387,7 @@
 
                 switch(cmd) {
                     case 'help':
-                        this.log("Available commands: ls, cd [dir], cat [file], pwd, clear", 'output');
+                        this.log(translations[currentLang].help_commands, 'output');
                         break;
                     case 'clear':
                         document.getElementById('terminal1').innerHTML = '';
@@ -1158,7 +1405,7 @@
                         this.cat(arg);
                         break;
                     default:
-                        this.log(`Unknown command: ${cmd}. Type 'help' for assistance.`, 'error');
+                        this.log(`${translations[currentLang].unknown_command} ${cmd}. ${translations[currentLang].type_help}`, 'error');
                 }
             },
 
@@ -1167,7 +1414,7 @@
                 if (contents) {
                     this.log(contents.join('  '), 'output');
                 } else {
-                    this.log("Error: directory inaccessible", 'error');
+                    this.log(translations[currentLang].directory_inaccessible, 'error');
                 }
             },
 
@@ -1190,7 +1437,7 @@
                     if (CONFIG.level1.fileSystem[newPath] !== undefined) {
                         this.currentPath = newPath;
                     } else {
-                        this.log(`cd: ${dir}: No such file or directory`, 'error');
+                        this.log(`cd: ${dir}: ${translations[currentLang].no_such_file}`, 'error');
                     }
                     return;
                 }
@@ -1199,13 +1446,13 @@
                 if (CONFIG.level1.fileSystem[newPath] !== undefined) {
                     this.currentPath = newPath;
                 } else {
-                    this.log(`cd: ${dir}: No such file or directory`, 'error');
+                    this.log(`cd: ${dir}: ${translations[currentLang].no_such_file}`, 'error');
                 }
             },
 
             cat(file) {
                 if (!file) {
-                    this.log("Usage: cat [filename]", 'output');
+                    this.log(translations[currentLang].usage_cat, 'output');
                     return;
                 }
 
@@ -1213,12 +1460,13 @@
                 if (content) {
                     this.log(content, 'success');
                 } else {
-                    this.log(`cat: ${file}: No such file or directory`, 'error');
+                    this.log(`cat: ${file}: ${translations[currentLang].no_such_file}`, 'error');
                 }
             },
 
             validateCode() {
-                const code = prompt("Enter the access code you found:");
+                const promptMsg = currentLang === 'en' ? "Enter the access code you found:" : "Entrez le code d'accès que vous avez trouvé :";
+                const code = prompt(promptMsg);
                 if (code && code.toUpperCase() === CONFIG.level1.secretCode) {
                     game.showFeedback(1, "✓ CODE ACCEPTED - ACCESS GRANTED", true);
                     game.nextLevel();
