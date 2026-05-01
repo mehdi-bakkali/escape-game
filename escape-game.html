@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Infiltration - Serveur Sécurisé</title>
+    <style>
+        /* ============================================
+           CSS - STYLE CYBER-TERMINAL
+           ============================================ */
+        :root {
+            --bg-color: #0a0a0a;
+            --terminal-bg: #0f0f0f;
+            --primary-color: #00ff41;
+            --secondary-color: #008f11;
+            --accent-color: #00ffff;
+            --error-color: #ff3333;
+            --warning-color: #ffaa00;
+            --text-color: #e0e0e0;
+            --dim-color: #666;
+            --border-glow: 0 0 10px rgba(0, 255, 65, 0.5);
+            --text-glow: 0 0 5px rgba(0, 255, 65, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'Consolas', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Effet de scanline */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* En-tête */
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 20px;
+            box-shadow: var(--border-glow);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: var(--text-glow);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: var(--secondary-color);
+            font-size: 0.8rem;
+        }
+
+        /* Barre de progression */
+        .progress-container {
+            background: var(--terminal-bg);
+            border: 1px solid var(--secondary-color);
+            border-radius: 3px;
+            padding: 3px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,0.3),
+                transparent
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            margin-top: 5px;
+        }
+
+        /* Chronomètre */
+        .timer-display {
+            background: var(--terminal-bg);
+            border: 1px solid var(--accent-color);
+            padding: 10px 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .timer-label {
+            font-size: 0.7rem;
+            color: var(--dim-color);
+            text-transform: uppercase;
+        }
+
+        .timer-value {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .timer-value.warning {
+            color: var(--warning-color);
+            animation: pulse 1s infinite;
+        }
+
+        .timer-value.danger {
+            color: var(--error-color);
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Écrans de jeu */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Zone de contenu */
+        .content-box {
+            background: var(--terminal-bg);
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .content-box h2 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .content-box p {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        /* Terminal de commande */
+        .terminal {
+            background: #000;
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            margin-bottom: 5px;
+            word-wrap: break-word;
+        }
+
+        .terminal-line.command {
+            color: var(--accent-color);
+        }
+
+        .terminal-line.output {
+            color: var(--text-color);
+        }
+
+        .terminal-line.error {
+            color: var(--error-color);
+        }
+
+        .terminal-line.success {
+            color: var(--primary-color);
+        }
+
+        .terminal-prompt {
+            color: var(--primary-color);
+        }
+
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: inherit;
+            outline: none;
+            width: 200px;
+        }
+
+        /* Inputs et boutons */
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--terminal-bg);
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            color: var(--primary-color);
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: var(--border-glow);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            color: var(--primary-color);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            box-shadow: var(--border-glow);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        button.secondary:hover {
+            background: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        button.hint-btn {
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+            font-size: 0.85rem;
+            padding: 8px 15px;
+        }
+
+        button.hint-btn:hover {
+            background: var(--warning-color);
+            color: var(--bg-color);
+        }
+
+        /* Zone d'indices */
+        .hint-zone {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid var(--warning-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .hint-zone.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .hint {
+            margin-bottom: 10px;
+            padding-left: 15px;
+            border-left: 3px solid var(--warning-color);
+            font-size: 0.85rem;
+        }
+
+        .hint.hidden {
+            opacity: 0.3;
+            filter: blur(3px);
+        }
+
+        .hint.revealed {
+            opacity: 1;
+            filter: none;
+        }
+
+        /* Niveau 2 - Roue de chiffrement */
+        .cipher-wheel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .cipher-display {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .cipher-letter {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--terminal-bg);
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .cipher-letter.original {
+            border-color: var(--dim-color);
+            color: var(--dim-color);
+        }
+
+        .shift-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .shift-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shift-value {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* Niveau 3 - Grille de données */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .data-cell {
+            background: var(--terminal-bg);
+            border: 1px solid var(--secondary-color);
+            border-radius: 3px;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .data-cell:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .data-cell.selected {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            border-color: var(--accent-color);
+        }
+
+        .data-cell.anomaly {
+            background: var(--error-color);
+            color: var(--bg-color);
+            animation: pulse 1s infinite;
+        }
+
+        /* Niveau 4 - Portes logiques */
+        .circuit-board {
+            background: #1a1a2e;
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .logic-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .logic-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .logic-switch {
+            width: 50px;
+            height: 30px;
+            background: var(--terminal-bg);
+            border: 2px solid var(--dim-color);
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .logic-switch.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .logic-gate {
+            width: 60px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--terminal-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 0.7rem;
+        }
+
+        .logic-output {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--terminal-bg);
+            border: 2px solid var(--dim-color);
+            transition: all 0.3s ease;
+        }
+
+        .logic-output.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .circuit-label {
+            font-size: 0.7rem;
+            color: var(--dim-color);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Écran de fin */
+        .success-screen {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .final-code {
+            font-size: 2rem;
+            color: var(--accent-color);
+            background: var(--terminal-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--accent-color);
+            margin: 20px 0;
+            letter-spacing: 5px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: var(--terminal-bg);
+            border: 1px solid var(--secondary-color);
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--dim-color);
+            text-transform: uppercase;
+        }
+
+        /* Messages de feedback */
+        .feedback {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback.success {
+            background: rgba(0, 255, 65, 0.2);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .feedback.error {
+            background: rgba(255, 51, 51, 0.2);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--secondary-color);
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: var(--dim-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            h1 { font-size: 1.2rem; }
+            .timer-value { font-size: 1.5rem; }
+            .cipher-letter { width: 35px; height: 35px; font-size: 0.9rem; }
+            .logic-switch { width: 40px; height: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Infiltration 2026 ⚡</h1>
+            <p class="subtitle">Serveur Sécurisé - Niveau d'Accès: RESTREINT</p>
+        </header>
+
+        <!-- Barre de progression -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            <div class="progress-text">
+                <span id="progressLevel">Niveau 0/4</span>
+                <span id="progressPercent">0%</span>
+            </div>
+        </div>
+
+        <!-- Chronomètre -->
+        <div class="timer-display">
+            <div class="timer-label">Temps Écoulé</div>
+            <div class="timer-value" id="timerDisplay">00:00</div>
+        </div>
+
+        <!-- ÉCRAN D'ACCUEIL -->
+        <div id="screenWelcome" class="screen active">
+            <div class="content-box">
+                <h2>🔐 BRIEFING DE MISSION</h2>
+                <p>Bienvenue, nouvelle recrue.</p>
+                <p>Notre organisation a intercepté des communications provenant d'un serveur hautement sécurisé. Votre mission : infiltrer le système, contourner les protocoles de sécurité et récupérer le fichier <strong>"TOP_SECRET.dat"</strong>.</p>
+                <p>Quatre couches de sécurité vous attendent. Chaque énigme résolue vous rapproche du cœur du système.</p>
+                <p style="color: var(--warning-color); margin-top: 20px;">
+                    ⚠️ <strong>ATTENTION :</strong> Le système dispose d'un protocole d'auto-destruction. Vous avez <strong>35 minutes</strong> maximum avant que toutes les données ne soient effacées.
+                </p>
+            </div>
+            <button onclick="game.startLevel(1)">COMMENCER L'INFILTRATION</button>
+        </div>
+
+        <!-- NIVEAU 1 - TERMINAL -->
+        <div id="screenLevel1" class="screen">
+            <div class="content-box">
+                <h2>💻 COUCHE 1 : LIGNE DE COMMANDE</h2>
+                <p>Vous avez accès à un terminal distant. Le premier code se trouve dans un fichier caché quelque part dans le système.</p>
+                <p>Commandes disponibles : <code style="color: var(--accent-color);">ls</code>, <code style="color: var(--accent-color);">cd [dir]</code>, <code style="color: var(--accent-color);">cat [file]</code>, <code style="color: var(--accent-color);">pwd</code></p>
+
+                <div class="terminal" id="terminal1">
+                    <div class="terminal-line output">Connection établie au serveur distant...</div>
+                    <div class="terminal-line output">Système: SecureOS v4.2</div>
+                    <div class="terminal-line success">Entrez vos commandes ci-dessous :</div>
+                </div>
+
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span class="terminal-prompt">$ </span>
+                    <input type="text" class="terminal-input" id="terminalInput1"
+                           placeholder="Entrez une commande..."
+                           onkeypress="if(event.key==='Enter') level1.executeCommand()">
+                </div>
+            </div>
+
+            <div id="feedback1" class="feedback"></div>
+
+            <button onclick="level1.validateCode()" id="btnValidate1">VALIDER LE CODE</button>
+            <button class="hint-btn" onclick="level1.showHint()">BESOIN D'AIDE ?</button>
+
+            <div class="hint-zone" id="hintZone1">
+                <div class="hint hidden" id="hint1a">📍 Indice 1 : Commencez par explorer le répertoire actuel avec <code>ls</code>, puis naviguez vers <code>/secure</code></div>
+                <div class="hint hidden" id="hint1b">📍 Indice 2 : Le fichier secret s'appelle <code>access_code.txt</code> et se trouve dans <code>/secure/classified</code></div>
+            </div>
+        </div>
+
+        <!-- NIVEAU 2 - CHIFFREMENT -->
+        <div id="screenLevel2" class="screen">
+            <div class="content-box">
+                <h2>🔐 COUCHE 2 : MESSAGE CHIFFRÉ</h2>
+                <p>Message intercepté sur le réseau interne :</p>
+                <div class="cipher-wheel">
+                    <div style="color: var(--dim-color); font-size: 0.8rem; margin-bottom: 10px;">Message original :</div>
+                    <div class="cipher-display" id="cipherOriginal"></div>
+
+                    <div class="shift-control">
+                        <button class="shift-btn secondary" onclick="level2.shift(-1)">◀</button>
+                        <div class="shift-value">Décalage: <span id="shiftValue">0</span></div>
+                        <button class="shift-btn secondary" onclick="level2.shift(1)">▶</button>
+                    </div>
+
+                    <div style="color: var(--dim-color); font-size: 0.8rem; margin-bottom: 10px;">Message décodé :</div>
+                    <div class="cipher-display" id="cipherDecoded"></div>
+                </div>
+
+                <p>Le mot de passe est le message décodé (sans espaces, en majuscules).</p>
+            </div>
+
+            <input type="text" id="inputLevel2" placeholder="Entrez le mot de passe décodé..." autocomplete="off">
+
+            <div id="feedback2" class="feedback"></div>
+
+            <button onclick="level2.validate()">VALIDER LE MOT DE PASSE</button>
+            <button class="hint-btn" onclick="level2.showHint()">BESOIN D'AIDE ?</button>
+
+            <div class="hint-zone" id="hintZone2">
+                <div class="hint hidden" id="hint2a">📍 Indice 1 : C'est un chiffrement de César. Essayez différents décalages jusqu'à ce que le texte ait du sens.</div>
+                <div class="hint hidden" id="hint2b">📍 Indice 2 : Le mot décodé est un terme informatique courant en 4 lettres.</div>
+            </div>
+        </div>
+
+        <!-- NIVEAU 3 - DONNÉES -->
+        <div id="screenLevel3" class="screen">
+            <div class="content-box">
+                <h2>📊 COUCHE 3 : ANOMALIE DE DONNÉES</h2>
+                <p>Base de données sismique corrompue. Une valeur ne suit pas la séquence logique.</p>
+                <p>Trouvez l'anomalie et entrez sa <strong>position (ligne-colonne)</strong> comme mot de passe (ex: 2-3).</p>
+
+                <div class="data-grid" id="dataGrid"></div>
+
+                <p style="font-size: 0.85rem; color: var(--dim-color);">
+                    💡 Cliquez sur la valeur suspecte pour la sélectionner, puis validez.
+                </p>
+            </div>
+
+            <div id="feedback3" class="feedback"></div>
+
+            <button onclick="level3.validate()" id="btnValidate3">VALIDER LA POSITION</button>
+            <button class="hint-btn" onclick="level3.showHint()">BESOIN D'AIDE ?</button>
+
+            <div class="hint-zone" id="hintZone3">
+                <div class="hint hidden" id="hint3a">📍 Indice 1 : Chaque ligne suit une progression mathématique simple. Cherchez le nombre qui brise le motif.</div>
+                <div class="hint hidden" id="hint3b">📍 Indice 2 : Ligne 1: +2, Ligne 2: +3, Ligne 3: ×2, Ligne 4: nombres premiers. L'anomalie est en position 2-4.</div>
+            </div>
+        </div>
+
+        <!-- NIVEAU 4 - CIRCUITS -->
+        <div id="screenLevel4" class="screen">
+            <div class="content-box">
+                <h2>⚡ COUCHE 4 : PORTES LOGIQUES</h2>
+                <p>Activez les bons interrupteurs pour que le courant atteigne la sortie finale.</p>
+                <p class="circuit-label">Configuration requise : Toutes les sorties doivent être ACTIVES (vertes)</p>
+
+                <div class="circuit-board">
+                    <div class="logic-row">
+                        <div class="logic-input">
+                            <div class="logic-switch" data-switch="A1" onclick="level4.toggleSwitch(this)"></div>
+                            <div class="logic-switch" data-switch="B1" onclick="level4.toggleSwitch(this)"></div>
+                        </div>
+                        <div class="logic-gate">AND</div>
+                        <div class="logic-output" id="out1"></div>
+                    </div>
+
+                    <div class="logic-row">
+                        <div class="logic-input">
+                            <div class="logic-switch" data-switch="A2" onclick="level4.toggleSwitch(this)"></div>
+                            <div class="logic-switch" data-switch="B2" onclick="level4.toggleSwitch(this)"></div>
+                        </div>
+                        <div class="logic-gate">OR</div>
+                        <div class="logic-output" id="out2"></div>
+                    </div>
+
+                    <div class="logic-row">
+                        <div class="logic-input">
+                            <div class="logic-switch" data-switch="A3" onclick="level4.toggleSwitch(this)"></div>
+                        </div>
+                        <div class="logic-gate">NOT</div>
+                        <div class="logic-output" id="out3"></div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <div class="logic-gate" style="width: 80px; height: 50px; font-size: 0.8rem;">FINAL OR</div>
+                        <div class="logic-output" id="outFinal" style="width: 50px; height: 50px; margin: 10px auto;"></div>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.85rem; color: var(--dim-color);">
+                    💡 AND = les 2 doivent être ON | OR = au moins 1 ON | NOT = inverse l'état
+                </p>
+            </div>
+
+            <div id="feedback4" class="feedback"></div>
+
+            <button onclick="level4.validate()" id="btnValidate4">VALIDER LA CONFIGURATION</button>
+            <button class="hint-btn" onclick="level4.showHint()">BESOIN D'AIDE ?</button>
+
+            <div class="hint-zone" id="hintZone4">
+                <div class="hint hidden" id="hint4a">📍 Indice 1 : Pour AND, activez les deux interrupteurs. Pour OR, un seul suffit. Pour NOT, laissez éteint.</div>
+                <div class="hint hidden" id="hint4b">📍 Indice 2 : Ligne 1: A1+B1 ON | Ligne 2: A2 ou B2 ON | Ligne 3: A3 OFF</div>
+            </div>
+        </div>
+
+        <!-- ÉCRAN DE FIN -->
+        <div id="screenSuccess" class="screen">
+            <div class="success-screen">
+                <div class="success-icon">🎉</div>
+                <h2 style="color: var(--primary-color); margin-bottom: 20px;">INFILTRATION RÉUSSIE !</h2>
+                <p>Félicitations, recrue ! Vous avez accédé au cœur du système et récupéré le fichier TOP_SECRET.dat.</p>
+
+                <div class="final-code" id="finalCode">ADMIN-2026</div>
+
+                <p style="color: var(--warning-color);">
+                    Présentez ce code au personnel pour déverrouiller la boîte à bonbons !
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="statTime">00:00</div>
+                        <div class="stat-label">Temps Total</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statHints">0</div>
+                        <div class="stat-label">Indices Utilisés</div>
+                    </div>
+                </div>
+
+                <button class="secondary" onclick="game.restart()">REJOUER</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Escape Game - Club Informatique 2026</p>
+            <p>Version 1.0 | Terminal Build</p>
+        </footer>
+    </div>
+
+    <script>
+        /* ============================================
+           JAVASCRIPT - LOGIQUE DE JEU (STATE MACHINE)
+           ============================================ */
+
+        // ==========================================
+        // CONFIGURATION - À MODIFIER FACILEMENT
+        // ==========================================
+        const CONFIG = {
+            level1: {
+                // Code à trouver dans le fichier secret
+                secretCode: "ALPHA7",
+                // Structure du système de fichiers
+                fileSystem: {
+                    '/': ['bin', 'home', 'secure', 'tmp'],
+                    '/home': ['user'],
+                    '/home/user': ['notes.txt'],
+                    '/secure': ['classified'],
+                    '/secure/classified': ['access_code.txt', 'data.log'],
+                    '/bin': ['ls', 'cd', 'cat'],
+                    '/tmp': ['cache.tmp']
+                },
+                // Contenu des fichiers
+                fileContents: {
+                    'notes.txt': "Rappel: changer mot de passe admin",
+                    'access_code.txt': "CODE D'ACCES: ALPHA7",
+                    'data.log': "LOG: Accès non autorisé détecté...",
+                    'cache.tmp': "0x4A 0x2F 0x1C"
+                }
+            },
+            level2: {
+                // Message à chiffrer (sera chiffré avec César)
+                originalMessage: "DATA",
+                // Décalage de César (positif = vers la droite)
+                caesarShift: 3,
+                // Réponse attendue
+                expectedAnswer: "DATA"
+            },
+            level3: {
+                // Grille de données (5x5)
+                // Format: [valeur, estAnomalie]
+                grid: [
+                    [2, 4, 6, 8, 10],      // +2 chaque fois
+                    [3, 6, 9, 15, 12],     // +3 chaque fois (15 est anomalie, devrait être 12)
+                    [1, 2, 4, 8, 16],      // ×2 chaque fois
+                    [2, 3, 5, 7, 11],      // Nombres premiers
+                    [5, 10, 15, 20, 25]    // +5 chaque fois
+                ],
+                // Position de l'anomalie (1-indexed)
+                anomalyRow: 2,
+                anomalyCol: 4,
+                // Réponse attendue
+                expectedAnswer: "2-4"
+            },
+            level4: {
+                // Configuration gagnante
+                // true = ON, false = OFF
+                solution: {
+                    'A1': true, 'B1': true,   // AND: besoin des deux
+                    'A2': true, 'B2': false,  // OR: un seul suffit
+                    'A3': false               // NOT: doit être OFF pour sortir ON
+                }
+            },
+            // Code final à montrer au personnel
+            finalCode: "ADMIN-2026",
+            // Temps maximum en secondes (35 minutes)
+            maxTime: 35 * 60
+        };
+
+        // ==========================================
+        // GESTIONNAIRE DE JEU (STATE MACHINE)
+        // ==========================================
+        const game = {
+            currentState: 'welcome',
+            currentLevel: 0,
+            startTime: null,
+            elapsedTime: 0,
+            timerInterval: null,
+            hintsUsed: 0,
+            levelStates: {},
+
+            // Initialisation
+            init() {
+                this.updateProgress(0);
+                this.startTimer();
+                console.log("Jeu initialisé - Mode infiltration activé");
+            },
+
+            // Démarrer un niveau
+            startLevel(levelNum) {
+                // Masquer tous les écrans
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+                // Afficher l'écran du niveau
+                const screenId = levelNum === 0 ? 'screenWelcome' : `screenLevel${levelNum}`;
+                document.getElementById(screenId).classList.add('active');
+
+                this.currentLevel = levelNum;
+                this.currentState = `level${levelNum}`;
+
+                // Mettre à jour la progression
+                this.updateProgress(levelNum);
+
+                // Initialiser le niveau si nécessaire
+                const initFn = `level${levelNum}Init`;
+                if (typeof window[initFn] === 'function') {
+                    window[initFn]();
+                }
+
+                console.log(`Niveau ${levelNum} démarré`);
+            },
+
+            // Mettre à jour la barre de progression
+            updateProgress(level) {
+                const percent = (level / 4) * 100;
+                document.getElementById('progressBar').style.width = percent + '%';
+                document.getElementById('progressLevel').textContent = `Niveau ${level}/4`;
+                document.getElementById('progressPercent').textContent = Math.round(percent) + '%';
+            },
+
+            // Démarrer le chronomètre
+            startTimer() {
+                this.startTime = Date.now();
+                this.timerInterval = setInterval(() => {
+                    this.elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+                    this.updateTimerDisplay();
+
+                    // Vérifier le temps maximum
+                    if (this.elapsedTime >= CONFIG.maxTime) {
+                        this.gameOver();
+                    }
+                }, 1000);
+            },
+
+            // Afficher le temps
+            updateTimerDisplay() {
+                const minutes = Math.floor(this.elapsedTime / 60);
+                const seconds = this.elapsedTime % 60;
+                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                const timerEl = document.getElementById('timerDisplay');
+                timerEl.textContent = display;
+
+                // Changer de couleur selon le temps restant
+                const remaining = CONFIG.maxTime - this.elapsedTime;
+                timerEl.classList.remove('warning', 'danger');
+
+                if (remaining < 300) { // 5 minutes
+                    timerEl.classList.add('danger');
+                } else if (remaining < 600) { // 10 minutes
+                    timerEl.classList.add('warning');
+                }
+            },
+
+            // Afficher un feedback
+            showFeedback(level, message, isSuccess) {
+                const feedbackEl = document.getElementById(`feedback${level}`);
+                feedbackEl.textContent = message;
+                feedbackEl.className = `feedback visible ${isSuccess ? 'success' : 'error'}`;
+
+                setTimeout(() => {
+                    feedbackEl.classList.remove('visible');
+                }, 3000);
+            },
+
+            // Passer au niveau suivant
+            nextLevel() {
+                if (this.currentLevel < 4) {
+                    setTimeout(() => {
+                        this.startLevel(this.currentLevel + 1);
+                    }, 1000);
+                } else {
+                    this.victory();
+                }
+            },
+
+            // Victoire !
+            victory() {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('screenSuccess').classList.add('active');
+                document.getElementById('finalCode').textContent = CONFIG.finalCode;
+                document.getElementById('statTime').textContent = this.getElapsedTimeDisplay();
+                document.getElementById('statHints').textContent = this.hintsUsed;
+
+                this.currentState = 'victory';
+                console.log("MISSION ACCOMPLIE !");
+            },
+
+            // Game Over (temps écoulé)
+            gameOver() {
+                clearInterval(this.timerInterval);
+                alert("⚠️ TEMPS ÉCOULÉ ! Le système a effacé toutes les données. Réessayez !");
+                this.restart();
+            },
+
+            // Obtenir le temps écoulé formaté
+            getElapsedTimeDisplay() {
+                const minutes = Math.floor(this.elapsedTime / 60);
+                const seconds = this.elapsedTime % 60;
+                return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            },
+
+            // Révéler un indice
+            revealHint(level, hintNum) {
+                const hintEl = document.getElementById(`hint${level}${hintNum}`);
+                if (hintEl && hintEl.classList.contains('hidden')) {
+                    hintEl.classList.remove('hidden');
+                    hintEl.classList.add('revealed');
+                    this.hintsUsed++;
+                }
+            },
+
+            // Recommencer
+            restart() {
+                clearInterval(this.timerInterval);
+                this.elapsedTime = 0;
+                this.hintsUsed = 0;
+                this.currentLevel = 0;
+                this.currentState = 'welcome';
+
+                // Reset tous les niveaux
+                level1.reset();
+                level2.reset();
+                level3.reset();
+                level4.reset();
+
+                // Reset timer
+                this.startTime = Date.now();
+                this.startTimer();
+
+                // Afficher écran d'accueil
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('screenWelcome').classList.add('active');
+                this.updateProgress(0);
+            }
+        };
+
+        // ==========================================
+        // NIVEAU 1 - TERMINAL
+        // ==========================================
+        const level1 = {
+            currentPath: '/',
+
+            init() {
+                this.currentPath = '/';
+                document.getElementById('terminalInput1').value = '';
+                document.getElementById('terminalInput1').focus();
+                this.log("Système prêt. Tapez 'help' pour l'aide.", 'output');
+            },
+
+            reset() {
+                this.currentPath = '/';
+                document.getElementById('terminal1').innerHTML = `
+                    <div class="terminal-line output">Connection établie au serveur distant...</div>
+                    <div class="terminal-line output">Système: SecureOS v4.2</div>
+                    <div class="terminal-line success">Entrez vos commandes ci-dessous :</div>
+                `;
+                document.getElementById('hintZone1').classList.remove('visible');
+                document.getElementById('hint1a').className = 'hint hidden';
+                document.getElementById('hint1b').className = 'hint hidden';
+            },
+
+            log(message, type = 'output') {
+                const terminal = document.getElementById('terminal1');
+                const line = document.createElement('div');
+                line.className = `terminal-line ${type}`;
+                line.textContent = message;
+                terminal.appendChild(line);
+                terminal.scrollTop = terminal.scrollHeight;
+            },
+
+            executeCommand() {
+                const input = document.getElementById('terminalInput1');
+                const command = input.value.trim().toLowerCase();
+
+                if (!command) return;
+
+                this.log(`$ ${command}`, 'command');
+                input.value = '';
+
+                const parts = command.split(' ');
+                const cmd = parts[0];
+                const arg = parts[1] || '';
+
+                switch(cmd) {
+                    case 'help':
+                        this.log("Commandes disponibles: ls, cd [dir], cat [file], pwd, clear", 'output');
+                        break;
+                    case 'clear':
+                        document.getElementById('terminal1').innerHTML = '';
+                        break;
+                    case 'pwd':
+                        this.log(this.currentPath, 'output');
+                        break;
+                    case 'ls':
+                        this.ls();
+                        break;
+                    case 'cd':
+                        this.cd(arg);
+                        break;
+                    case 'cat':
+                        this.cat(arg);
+                        break;
+                    default:
+                        this.log(`Commande inconnue: ${cmd}. Tapez 'help' pour l'aide.`, 'error');
+                }
+            },
+
+            ls() {
+                const contents = CONFIG.level1.fileSystem[this.currentPath];
+                if (contents) {
+                    this.log(contents.join('  '), 'output');
+                } else {
+                    this.log("Erreur: répertoire inaccessible", 'error');
+                }
+            },
+
+            cd(dir) {
+                if (!dir) {
+                    this.currentPath = '/';
+                    return;
+                }
+
+                if (dir === '..') {
+                    if (this.currentPath === '/') return;
+                    const parts = this.currentPath.split('/');
+                    parts.pop();
+                    this.currentPath = parts.join('/') || '/';
+                    return;
+                }
+
+                if (dir.startsWith('/')) {
+                    const newPath = dir.endsWith('/') ? dir.slice(0, -1) : dir;
+                    if (CONFIG.level1.fileSystem[newPath] !== undefined) {
+                        this.currentPath = newPath;
+                    } else {
+                        this.log(`cd: ${dir}: Aucun fichier ou dossier de ce type`, 'error');
+                    }
+                    return;
+                }
+
+                const newPath = this.currentPath === '/' ? `/${dir}` : `${this.currentPath}/${dir}`;
+                if (CONFIG.level1.fileSystem[newPath] !== undefined) {
+                    this.currentPath = newPath;
+                } else {
+                    this.log(`cd: ${dir}: Aucun fichier ou dossier de ce type`, 'error');
+                }
+            },
+
+            cat(file) {
+                if (!file) {
+                    this.log("Usage: cat [nom_fichier]", 'output');
+                    return;
+                }
+
+                const content = CONFIG.level1.fileContents[file];
+                if (content) {
+                    this.log(content, 'success');
+                } else {
+                    this.log(`cat: ${file}: Aucun fichier ou dossier de ce type`, 'error');
+                }
+            },
+
+            validateCode() {
+                const code = prompt("Entrez le code d'accès trouvé :");
+                if (code && code.toUpperCase() === CONFIG.level1.secretCode) {
+                    game.showFeedback(1, "✓ CODE ACCEPTÉ - ACCÈS AUTORISÉ", true);
+                    game.nextLevel();
+                } else if (code) {
+                    game.showFeedback(1, "✗ CODE INCORRECT - ACCÈS REFUSÉ", false);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone1');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint1a').classList.contains('hidden')) {
+                    game.revealHint(1, 'a');
+                } else if (document.getElementById('hint1b').classList.contains('hidden')) {
+                    game.revealHint(1, 'b');
+                }
+            }
+        };
+
+        // ==========================================
+        // NIVEAU 2 - CHIFFREMENT DE CÉSAR
+        // ==========================================
+        const level2 = {
+            currentShift: 0,
+
+            init() {
+                this.currentShift = 0;
+                document.getElementById('inputLevel2').value = '';
+                document.getElementById('hintZone2').classList.remove('visible');
+                document.getElementById('hint2a').className = 'hint hidden';
+                document.getElementById('hint2b').className = 'hint hidden';
+                this.render();
+            },
+
+            reset() {
+                this.init();
+            },
+
+            // Chiffrer un message avec César
+            caesarCipher(str, shift) {
+                return str.toUpperCase().split('').map(char => {
+                    if (char.match(/[A-Z]/)) {
+                        const code = char.charCodeAt(0);
+                        const shifted = ((code - 65 + shift + 26) % 26) + 65;
+                        return String.fromCharCode(shifted);
+                    }
+                    return char;
+                }).join('');
+            },
+
+            // Afficher le message chiffré
+            render() {
+                const encrypted = this.caesarCipher(CONFIG.level2.originalMessage, CONFIG.level2.caesarShift);
+                const decoded = this.caesarCipher(encrypted, -this.currentShift);
+
+                // Afficher l'original chiffré
+                const originalContainer = document.getElementById('cipherOriginal');
+                originalContainer.innerHTML = encrypted.split('').map((c, i) =>
+                    `<div class="cipher-letter original">${c}</div>`
+                ).join('');
+
+                // Afficher le décodé
+                const decodedContainer = document.getElementById('cipherDecoded');
+                decodedContainer.innerHTML = decoded.split('').map((c, i) =>
+                    `<div class="cipher-letter">${c}</div>`
+                ).join('');
+
+                document.getElementById('shiftValue').textContent = this.currentShift;
+            },
+
+            shift(delta) {
+                this.currentShift += delta;
+                // Limiter entre -25 et 25
+                if (this.currentShift > 25) this.currentShift = -25;
+                if (this.currentShift < -25) this.currentShift = 25;
+                this.render();
+            },
+
+            validate() {
+                const input = document.getElementById('inputLevel2').value.trim().toUpperCase();
+
+                if (input === CONFIG.level2.expectedAnswer) {
+                    game.showFeedback(2, "✓ MOT DE PASSE ACCEPTÉ", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(2, "✗ MOT DE PASSE INCORRECT", false);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone2');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint2a').classList.contains('hidden')) {
+                    game.revealHint(2, 'a');
+                } else if (document.getElementById('hint2b').classList.contains('hidden')) {
+                    game.revealHint(2, 'b');
+                }
+            }
+        };
+
+        // ==========================================
+        // NIVEAU 3 - ANOMALIE DE DONNÉES
+        // ==========================================
+        const level3 = {
+            selectedCell: null,
+
+            init() {
+                this.selectedCell = null;
+                document.getElementById('hintZone3').classList.remove('visible');
+                document.getElementById('hint3a').className = 'hint hidden';
+                document.getElementById('hint3b').className = 'hint hidden';
+                this.renderGrid();
+            },
+
+            reset() {
+                this.init();
+            },
+
+            renderGrid() {
+                const container = document.getElementById('dataGrid');
+                container.innerHTML = '';
+
+                CONFIG.level3.grid.forEach((row, rowIndex) => {
+                    row.forEach((value, colIndex) => {
+                        const cell = document.createElement('div');
+                        cell.className = 'data-cell';
+                        cell.textContent = value;
+                        cell.dataset.row = rowIndex + 1;
+                        cell.dataset.col = colIndex + 1;
+                        cell.onclick = () => this.selectCell(cell, rowIndex + 1, colIndex + 1);
+                        container.appendChild(cell);
+                    });
+                });
+            },
+
+            selectCell(cell, row, col) {
+                // Retirer la sélection précédente
+                document.querySelectorAll('.data-cell').forEach(c => c.classList.remove('selected'));
+
+                // Nouvelle sélection
+                cell.classList.add('selected');
+                this.selectedCell = { row, col };
+            },
+
+            validate() {
+                if (!this.selectedCell) {
+                    game.showFeedback(3, "✗ SÉLECTIONNEZ UNE CELLULE D'ABORD", false);
+                    return;
+                }
+
+                const { row, col } = this.selectedCell;
+                const expected = `${CONFIG.level3.anomalyRow}-${CONFIG.level3.anomalyCol}`;
+                const input = `${row}-${col}`;
+
+                if (input === expected) {
+                    game.showFeedback(3, "✓ ANOMALIE IDENTIFIÉE", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(3, "✗ CE N'EST PAS L'ANOMALIE", false);
+
+                    // Montrer l'anomalie après 2 erreurs
+                    const anomalyCell = document.querySelector(`[data-row="${CONFIG.level3.anomalyRow}"][data-col="${CONFIG.level3.anomalyCol}"]`);
+                    if (anomalyCell) {
+                        anomalyCell.classList.add('anomaly');
+                    }
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone3');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint3a').classList.contains('hidden')) {
+                    game.revealHint(3, 'a');
+                } else if (document.getElementById('hint3b').classList.contains('hidden')) {
+                    game.revealHint(3, 'b');
+                }
+            }
+        };
+
+        // ==========================================
+        // NIVEAU 4 - PORTES LOGIQUES
+        // ==========================================
+        const level4 = {
+            switches: {},
+
+            init() {
+                this.switches = {};
+                document.querySelectorAll('.logic-switch').forEach(s => {
+                    s.classList.remove('active');
+                    this.switches[s.dataset.switch] = false;
+                });
+                document.getElementById('hintZone4').classList.remove('visible');
+                document.getElementById('hint4a').className = 'hint hidden';
+                document.getElementById('hint4b').className = 'hint hidden';
+                this.updateOutputs();
+            },
+
+            reset() {
+                this.init();
+            },
+
+            toggleSwitch(element) {
+                const switchId = element.dataset.switch;
+                this.switches[switchId] = !this.switches[switchId];
+                element.classList.toggle('active');
+                this.updateOutputs();
+            },
+
+            updateOutputs() {
+                // Ligne 1: AND
+                const out1 = document.getElementById('out1');
+                const andResult = this.switches['A1'] && this.switches['B1'];
+                out1.classList.toggle('active', andResult);
+
+                // Ligne 2: OR
+                const out2 = document.getElementById('out2');
+                const orResult = this.switches['A2'] || this.switches['B2'];
+                out2.classList.toggle('active', orResult);
+
+                // Ligne 3: NOT
+                const out3 = document.getElementById('out3');
+                const notResult = !this.switches['A3'];
+                out3.classList.toggle('active', notResult);
+
+                // Final: OR des trois sorties
+                const outFinal = document.getElementById('outFinal');
+                const finalResult = andResult || orResult || notResult;
+                outFinal.classList.toggle('active', finalResult);
+            },
+
+            validate() {
+                // Vérifier si la configuration correspond à la solution
+                let isCorrect = true;
+
+                for (const [key, value] of Object.entries(CONFIG.level4.solution)) {
+                    if (this.switches[key] !== value) {
+                        isCorrect = false;
+                        break;
+                    }
+                }
+
+                // Vérifier aussi que la sortie finale est active
+                const outFinal = document.getElementById('outFinal');
+                const finalActive = outFinal.classList.contains('active');
+
+                if (isCorrect && finalActive) {
+                    game.showFeedback(4, "✓ CONFIGURATION VALIDÉE - ACCÈS CORE AUTORISÉ", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(4, "✗ CONFIGURATION INCORRECTE", false);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone4');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint4a').classList.contains('hidden')) {
+                    game.revealHint(4, 'a');
+                } else if (document.getElementById('hint4b').classList.contains('hidden')) {
+                    game.revealHint(4, 'b');
+                }
+            }
+        };
+
+        // ==========================================
+        // INITIALISATION DU JEU
+        // ==========================================
+        window.onload = () => {
+            game.init();
+            console.log("=== INFILTRATION 2026 ===");
+            console.log("Prêt à commencer la mission...");
+        };
+    </script>
+</body>
+</html>
