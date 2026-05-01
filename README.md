@@ -4,11 +4,8 @@ Virtual Escape Game designed for a computer club fair. Players must infiltrate a
 
 ## 🚀 Online Access
 
-Scan this QR Code to access the game:
-
-![QR Code](<img width="213" height="212" alt="Capture d’écran 2026-05-01 à 14 57 10" src="https://github.com/user-attachments/assets/c704e032-e29c-4554-9f7e-e96f77afb203" />)
-
-Or visit: **https://mehdi-bakkali.github.io/escape-game/escape-game.html**
+Visit to access the game:: 
+**https://mehdi-bakkali.github.io/escape-game/escape-game.html**
 
 ## 📖 Story
 
