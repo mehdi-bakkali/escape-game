@@ -1249,12 +1249,12 @@
         // ==========================================
         const translations = {
             en: {
-                level_x_of_4: "Level 0/4",
+                level_x_of_4: "Level 0/10",
                 elapsed_time: "Elapsed Time",
                 mission_briefing: "🔐 MISSION BRIEFING",
                 welcome_recruit: "Welcome, recruit.",
                 mission_desc: "Our organization has intercepted communications from a highly secure server. Your mission: infiltrate the system, bypass security protocols, and retrieve the <strong>\"TOP_SECRET.dat\"</strong> file.",
-                four_layers: "Four security layers await you. Each puzzle solved brings you closer to the system core.",
+                four_layers: "Ten security layers await you. Each puzzle solved brings you closer to the system core.",
                 warning_label: "WARNING:",
                 time_warning: "The system has a self-destruct protocol. You have <strong>35 minutes</strong> maximum before all data is erased.",
                 start_infiltration: "START INFILTRATION",
@@ -1379,12 +1379,12 @@
                 usage_cat: "Usage: cat [filename]"
             },
             fr: {
-                level_x_of_4: "Niveau 0/4",
+                level_x_of_4: "Niveau 0/10",
                 elapsed_time: "Temps écoulé",
                 mission_briefing: "🔐 BRIEFING DE MISSION",
                 welcome_recruit: "Bienvenue, recrue.",
                 mission_desc: "Notre organisation a intercepté des communications provenant d'un serveur hautement sécurisé. Votre mission : infiltrer le système, contourner les protocoles de sécurité et récupérer le fichier <strong>\"TOP_SECRET.dat\"</strong>.",
-                four_layers: "Quatre couches de sécurité vous attendent. Chaque énigme résolue vous rapproche du cœur du système.",
+                four_layers: "Dix couches de sécurité vous attendent. Chaque énigme résolue vous rapproche du cœur du système.",
                 warning_label: "ATTENTION :",
                 time_warning: "Le système dispose d'un protocole d'autodestruction. Vous avez <strong>35 minutes</strong> maximum avant que toutes les données ne soient effacées.",
                 start_infiltration: "COMMENCER L'INFILTRATION",
@@ -1539,14 +1539,14 @@
             // Update progress level if on welcome screen
             const progressLevel = document.getElementById('progressLevel');
             if (currentLang === 'fr' && progressLevel.textContent.startsWith('Level')) {
-                const levelNum = progressLevel.textContent.match(/(\d+)\/4/);
+                const levelNum = progressLevel.textContent.match(/(\d+)\/10/);
                 if (levelNum) {
-                    progressLevel.textContent = `Niveau ${levelNum[1]}/4`;
+                    progressLevel.textContent = `Niveau ${levelNum[1]}/10`;
                 }
             } else if (currentLang === 'en' && progressLevel.textContent.startsWith('Niveau')) {
-                const levelNum = progressLevel.textContent.match(/(\d+)\/4/);
+                const levelNum = progressLevel.textContent.match(/(\d+)\/10/);
                 if (levelNum) {
-                    progressLevel.textContent = `Level ${levelNum[1]}/4`;
+                    progressLevel.textContent = `Level ${levelNum[1]}/10`;
                 }
             }
 
