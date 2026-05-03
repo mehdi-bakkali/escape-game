@@ -4,9 +4,9 @@ Virtual Escape Game designed for Addictech. Players must infiltrate a secure ser
 
 ## 🚀 Online Access
 
-Visit to access the game:: 
-**https://mehdi-bakkali.github.io/escape-game/escape-game.html**
-
+Visit to access the game:
+[**https://mehdi-bakkali.github.io/escape-game/escape-game.html**
+](https://mehdi-bakkali.github.io/escape-game/escape-game.html)
 ## ⏱️ Duration
 
 30-35 minutes maximum (built-in timer)
