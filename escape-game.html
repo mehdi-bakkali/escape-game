@@ -159,24 +159,32 @@
             margin-top: 5px;
         }
 
-        /* Timer */
-        .timer-display {
+        /* Timer and Score */
+        .stats-header {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display, .score-display {
             background: var(--terminal-bg);
             border: 1px solid var(--accent-color);
             padding: 10px 15px;
             text-align: center;
-            margin-bottom: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            flex: 1;
+            max-width: 200px;
         }
 
-        .timer-label {
+        .timer-label, .score-label {
             font-size: 0.7rem;
             color: var(--dim-color);
             text-transform: uppercase;
         }
 
-        .timer-value {
+        .timer-value, .score-value {
             font-size: 1.8rem;
             color: var(--accent-color);
             font-weight: bold;
@@ -819,10 +827,16 @@
             </div>
         </div>
 
-        <!-- Timer -->
-        <div class="timer-display">
-            <div class="timer-label" data-i18n="elapsed_time">Elapsed Time</div>
-            <div class="timer-value" id="timerDisplay">00:00</div>
+        <!-- Timer and Score -->
+        <div class="stats-header">
+            <div class="timer-display">
+                <div class="timer-label" data-i18n="elapsed_time">Elapsed Time</div>
+                <div class="timer-value" id="timerDisplay">00:00</div>
+            </div>
+            <div class="score-display">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="currentScore">10000</div>
+            </div>
         </div>
 
         <!-- WELCOME SCREEN -->
@@ -1116,7 +1130,6 @@
                     <div style="color: var(--text-color);">| 3  | charlie| 1     |</div>
                     <div style="color: var(--text-color);">| 4  | diana  | 1     |</div>
                     <div style="color: var(--text-color);">+----+--------+-------+</div>
-                    <div style="color: var(--dim-color); margin-top: 10px;" data-i18n="sample_query">Sample: SELECT * FROM users WHERE admin = 1</div>
                 </div>
 
                 <input type="text" id="inputLevel8" data-i18n-placeholder="enter_sql_query" placeholder="Enter SQL query..." autocomplete="off">
@@ -1676,6 +1689,7 @@
                 }
                 applyTranslations();
                 this.updateProgress(0);
+                this.updateScoreDisplay();
                 this.startTimer();
                 console.log("Game initialized - Infiltration mode activated");
             },
@@ -1745,6 +1759,15 @@
                 } else if (remaining < 600) { // 10 minutes
                     timerEl.classList.add('warning');
                 }
+
+                // Update live score
+                this.updateScoreDisplay();
+            },
+
+            // Update score display
+            updateScoreDisplay() {
+                const score = Math.max(0, 10000 - (this.elapsedTime * 10) - (this.hintsUsed * 500));
+                document.getElementById('currentScore').textContent = score;
             },
 
             // Show feedback
@@ -1796,7 +1819,8 @@
 
                 // Calculate final score: 10000 - 10*seconds - 500*hintsUsed, minimum 0
                 const score = Math.max(0, 10000 - (this.elapsedTime * 10) - (this.hintsUsed * 500));
-                document.getElementById('statScore').textContent = score.toLocaleString();
+                document.getElementById('statScore').textContent = score;
+                document.getElementById('currentScore').textContent = score;
 
                 this.currentState = 'victory';
                 console.log("MISSION ACCOMPLISHED!");
@@ -1823,6 +1847,7 @@
                     hintEl.classList.remove('hidden');
                     hintEl.classList.add('revealed');
                     this.hintsUsed++;
+                    this.updateScoreDisplay();
                 }
             },
 
@@ -1854,6 +1879,7 @@
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.getElementById('screenWelcome').classList.add('active');
                 this.updateProgress(0);
+                this.updateScoreDisplay();
             }
         };
 
@@ -2726,29 +2752,3 @@
                     ctx.fillStyle = '#fff';
                     ctx.font = '16px Courier New';
                     ctx.fillText('SYNCHRONISATION ATTEINTE', 18, 28);
-                }
-            },
-
-            showHint() {
-                const zone = document.getElementById('hintZone10');
-                zone.classList.add('visible');
-
-                if (document.getElementById('hint10a').classList.contains('hidden')) {
-                    game.revealHint(10, 'a');
-                } else if (document.getElementById('hint10b').classList.contains('hidden')) {
-                    game.revealHint(10, 'b');
-                }
-            }
-        };
-
-        function level10Init() { level10.init(); }
-        // GAME INITIALIZATION
-        // ==========================================
-        window.onload = () => {
-            game.init();
-            console.log("=== INFILTRATION 2026 ===");
-            console.log("Ready to start mission...");
-        };
-    </script>
-</body>
-</html>
