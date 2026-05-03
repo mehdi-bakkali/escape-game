@@ -2752,3 +2752,29 @@
                     ctx.fillStyle = '#fff';
                     ctx.font = '16px Courier New';
                     ctx.fillText('SYNCHRONISATION ATTEINTE', 18, 28);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone10');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint10a').classList.contains('hidden')) {
+                    game.revealHint(10, 'a');
+                } else if (document.getElementById('hint10b').classList.contains('hidden')) {
+                    game.revealHint(10, 'b');
+                }
+            }
+        };
+
+        function level10Init() { level10.init(); }
+        // GAME INITIALIZATION
+        // ==========================================
+        window.onload = () => {
+            game.init();
+            console.log("=== INFILTRATION 2026 ===");
+            console.log("Ready to start mission...");
+        };
+    </script>
+</body>
+</html>
