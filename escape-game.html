@@ -558,6 +558,145 @@
             margin-bottom: 10px;
         }
 
+        /* Level 5 - Memory blocks */
+        .memory-block {
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .memory-block[data-color="red"] {
+            background: #cc3333;
+        }
+
+        .memory-block[data-color="blue"] {
+            background: #3333cc;
+        }
+
+        .memory-block[data-color="green"] {
+            background: #33cc33;
+        }
+
+        .memory-block[data-color="yellow"] {
+            background: #cccc33;
+        }
+
+        .memory-block:hover {
+            transform: scale(0.95);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.3), 0 0 10px currentColor;
+        }
+
+        .memory-block.active {
+            transform: scale(0.85);
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.8), 0 0 20px currentColor;
+            filter: brightness(1.5);
+        }
+
+        .code-block {
+            background: #020202;
+            border: 1px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            color: #f4f4f4;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .code-line.indent {
+            padding-left: 24px;
+        }
+
+        .code-line.indent2 {
+            padding-left: 44px;
+        }
+
+        .code-line.active {
+            background: rgba(0, 255, 65, 0.12);
+            color: #00ff41;
+        }
+
+        .stat-value.stat-score {
+            font-family: 'Digital-7', 'Courier New', monospace;
+            font-size: 2.5rem;
+            letter-spacing: 0.1em;
+            color: var(--accent-color);
+        }
+
+        /* Level 7 - Signal canvas */
+        canvas {
+            display: block;
+        }
+
+        .scanner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .scanner-card {
+            border: 1px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 14px;
+            background: rgba(255,255,255,0.03);
+            text-align: center;
+        }
+
+        .scanner-title {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .scanner-rule {
+            color: var(--text-color);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* Level 10 - MFA codes */
+        .mfa-code {
+            padding: 15px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .mfa-code.correct {
+            background: rgba(0, 255, 65, 0.3);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .mfa-code.fake {
+            background: rgba(255, 51, 51, 0.3);
+            border-color: var(--error-color);
+            color: var(--error-color);
+        }
+
+        .mfa-code:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .mfa-code:active {
+            transform: scale(0.95);
+        }
+
         /* Success screen */
         .success-screen {
             text-align: center;
@@ -675,7 +814,7 @@
         <div class="progress-container">
             <div class="progress-bar" id="progressBar" style="width: 0%"></div>
             <div class="progress-text">
-                <span id="progressLevel" data-i18n="level_x_of_4">Level 0/4</span>
+                <span id="progressLevel" data-i18n="level_x_of_10">Level 0/10</span>
                 <span id="progressPercent">0%</span>
             </div>
         </div>
@@ -849,6 +988,223 @@
             </div>
         </div>
 
+        <!-- LEVEL 5 - MEMORY / SIMON SAYS -->
+        <div id="screenLevel5" class="screen">
+            <div class="content-box">
+                <h2 data-i18n="layer5_title">🧠 LAYER 5: MEMORY - FUITE MÉMOIRE</h2>
+                <p data-i18n="layer5_desc">A Simon Says challenge. Watch the sequence of blocks light up, then reproduce it.</p>
+                <p data-i18n="layer5_instruction">Click the blocks in the correct order. The sequence gets longer each time!</p>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px 0; aspect-ratio: 1;">
+                    <div class="memory-block" data-color="red" onclick="level5.playerClick(0)"></div>
+                    <div class="memory-block" data-color="blue" onclick="level5.playerClick(1)"></div>
+                    <div class="memory-block" data-color="green" onclick="level5.playerClick(2)"></div>
+                    <div class="memory-block" data-color="yellow" onclick="level5.playerClick(3)"></div>
+                </div>
+
+                <p style="text-align: center; font-size: 0.9rem; color: var(--accent-color);" id="level5Status">
+                    <span data-i18n="mfa_instructions">Watch the sequence...</span>
+                </p>
+            </div>
+
+            <div id="feedback5" class="feedback"></div>
+
+            <button onclick="level5.validate()" id="btnValidate5" data-i18n="validate_sequence">VALIDATE SEQUENCE</button>
+            <button class="hint-btn" onclick="level5.showHint()" data-i18n="need_help">NEED HELP?</button>
+
+            <div class="hint-zone" id="hintZone5">
+                <div class="hint hidden" id="hint5a" data-i18n="hint5a">📍 Hint 1: Memorize the flashing pattern. Each new round adds one more block.</div>
+                <div class="hint hidden" id="hint5b" data-i18n="hint5b">📍 Hint 2: Click the blocks in the exact same order as they flashed. No mistakes allowed!</div>
+            </div>
+        </div>
+
+        <!-- LEVEL 6 - BINARY / IP CONVERSION -->
+        <div id="screenLevel6" class="screen">
+            <div class="content-box">
+                <h2 data-i18n="layer6_title">📡 LAYER 6: BINARY - MASQUE RÉSEAU</h2>
+                <p data-i18n="layer6_desc">Convert the IP address to binary notation or determine the network mask.</p>
+                <p data-i18n="layer6_instruction">Convert the IP address to its binary form (e.g., 192.168.1.1 → 11000000101010000000000100000001).</p>
+
+                <div style="background: var(--terminal-bg); border: 1px solid var(--secondary-color); border-radius: 5px; padding: 15px; margin: 20px 0; text-align: center;">
+                    <div style="font-size: 0.85rem; color: var(--dim-color); margin-bottom: 10px;" data-i18n="ip_address">IP Address:</div>
+                    <div style="font-size: 1.2rem; color: var(--primary-color); font-weight: bold; letter-spacing: 2px;" id="ipDisplay">192.168.1.1</div>
+                </div>
+
+                <input type="text" id="inputLevel6" data-i18n-placeholder="enter_binary" placeholder="Enter binary form..." autocomplete="off">
+            </div>
+
+            <div id="feedback6" class="feedback"></div>
+
+            <button onclick="level6.validate()" data-i18n="validate_binary">VALIDATE BINARY</button>
+            <button class="hint-btn" onclick="level6.showHint()" data-i18n="need_help">NEED HELP?</button>
+
+            <div class="hint-zone" id="hintZone6">
+                <div class="hint hidden" id="hint6a" data-i18n="hint6a">📍 Hint 1: Convert each octet (number separated by dots) to 8-bit binary. 192 = 11000000</div>
+                <div class="hint hidden" id="hint6b" data-i18n="hint6b">📍 Hint 2: 168 = 10101000, 1 = 00000001. Concatenate them all without spaces.</div>
+            </div>
+        </div>
+
+        <!-- LEVEL 7 - LOGIC BRANCH (NESTED CONDITIONALS) -->
+        <div id="screenLevel7" class="screen">
+            <div class="content-box">
+                <h2>🧩 LAYER 7: THE LOGIC BRANCH</h2>
+                <p>Trace the nested conditionals and find the right values for X, Y and Z.</p>
+                <p>Adjust the sliders until <strong>RESULT = 15</strong>.</p>
+
+                <div class="code-block" id="logicCodeBlock">
+                    <div class="code-line" id="codeLine1">if (X > 5) {</div>
+                    <div class="code-line indent" id="codeLine2">if (Y < 4) {</div>
+                    <div class="code-line indent2" id="codeLine3">if (Z === 2) { RESULT = 10; }</div>
+                    <div class="code-line indent2" id="codeLine4">else { RESULT = 8; }</div>
+                    <div class="code-line indent" id="codeLine5">} else {</div>
+                    <div class="code-line indent2" id="codeLine6">if (Z > 7) { RESULT = 20; } else { RESULT = 12; }</div>
+                    <div class="code-line" id="codeLine7">} else {</div>
+                    <div class="code-line indent" id="codeLine8">if (Y >= 4) {</div>
+                    <div class="code-line indent2" id="codeLine9">if (Z < 5) { RESULT = 5; } else { RESULT = 15; }</div>
+                    <div class="code-line indent" id="codeLine10">} else {</div>
+                    <div class="code-line indent2" id="codeLine11">if (Z === 9) { RESULT = 7; } else { RESULT = 3; }</div>
+                    <div class="code-line indent" id="codeLine12">}</div>
+                    <div class="code-line" id="codeLine13">}</div>
+                </div>
+
+                <div style="margin: 20px 0; display: grid; gap: 15px;">
+                    <div>
+                        <label style="display: block; color: var(--dim-color); margin-bottom: 5px;">X: <span id="sliderXValue">1</span></label>
+                        <input type="range" id="sliderX" min="0" max="9" step="1" value="1" oninput="level7.updateLogic()" style="width: 100%; cursor: pointer;">
+                    </div>
+                    <div>
+                        <label style="display: block; color: var(--dim-color); margin-bottom: 5px;">Y: <span id="sliderYValue">1</span></label>
+                        <input type="range" id="sliderY" min="0" max="9" step="1" value="1" oninput="level7.updateLogic()" style="width: 100%; cursor: pointer;">
+                    </div>
+                    <div>
+                        <label style="display: block; color: var(--dim-color); margin-bottom: 5px;">Z: <span id="sliderZValue">1</span></label>
+                        <input type="range" id="sliderZ" min="0" max="9" step="1" value="1" oninput="level7.updateLogic()" style="width: 100%; cursor: pointer;">
+                    </div>
+                </div>
+
+                <div style="padding: 15px; background: #111; border: 1px solid var(--secondary-color); border-radius: 5px; color: var(--text-color); font-size: 0.95rem;">
+                    <div style="margin-bottom: 8px;">Target: <strong>RESULT = <span id="targetValue">15</span></strong></div>
+                    <div>Current: <strong id="currentResult">0</strong></div>
+                </div>
+            </div>
+
+            <div id="feedback7" class="feedback"></div>
+
+            <button onclick="level7.validate()" id="btnValidate7">VALIDATE RESULT</button>
+            <button class="hint-btn" onclick="level7.showHint()">NEED HELP?</button>
+
+            <div class="hint-zone" id="hintZone7">
+                <div class="hint hidden" id="hint7a">📍 Hint 1: X must be equal to 3. Lock it, then adjust Y and Z.</div>
+                <div class="hint hidden" id="hint7b">📍 Hint 2: To reach 15, Y must be at least 4 and Z must be 5 or more.</div>
+            </div>
+        </div>
+
+        <!-- LEVEL 8 - SQL INJECTION -->
+        <div id="screenLevel8" class="screen">
+            <div class="content-box">
+                <h2 data-i18n="layer8_title">💾 LAYER 8: SQL - INJECTION</h2>
+                <p data-i18n="layer8_desc">Simulate a database query. Execute SQL commands to extract the security key.</p>
+                <p data-i18n="layer8_instruction">Enter a SQL query to extract the admin access key from the database.</p>
+
+                <div style="background: #000; border: 1px solid var(--primary-color); border-radius: 5px; padding: 15px; margin: 15px 0; min-height: 100px; font-family: monospace; font-size: 0.85rem;">
+                    <div style="color: var(--dim-color); margin-bottom: 10px;">mysql> <span style="color: var(--accent-color);">SELECT * FROM users;</span></div>
+                    <div style="color: var(--text-color);">+----+--------+-------+</div>
+                    <div style="color: var(--text-color);">| id | name   | admin |</div>
+                    <div style="color: var(--text-color);">+----+--------+-------+</div>
+                    <div style="color: var(--text-color);">| 1  | alice  | 0     |</div>
+                    <div style="color: var(--text-color);">| 2  | bob    | 0     |</div>
+                    <div style="color: var(--text-color);">| 3  | charlie| 1     |</div>
+                    <div style="color: var(--text-color);">| 4  | diana  | 1     |</div>
+                    <div style="color: var(--text-color);">+----+--------+-------+</div>
+                    <div style="color: var(--dim-color); margin-top: 10px;" data-i18n="sample_query">Sample: SELECT * FROM users WHERE admin = 1</div>
+                </div>
+
+                <input type="text" id="inputLevel8" data-i18n-placeholder="enter_sql_query" placeholder="Enter SQL query..." autocomplete="off">
+            </div>
+
+            <div id="feedback8" class="feedback"></div>
+
+            <button onclick="level8.validate()" data-i18n="execute_query">EXECUTE QUERY</button>
+            <button class="hint-btn" onclick="level8.showHint()" data-i18n="need_help">NEED HELP?</button>
+
+            <div class="hint-zone" id="hintZone8">
+                <div class="hint hidden" id="hint8a" data-i18n="hint8a">📍 Hint 1: You need to extract data where admin = 1. Use a SELECT query with WHERE clause.</div>
+                <div class="hint hidden" id="hint8b" data-i18n="hint8b">📍 Hint 2: Try: SELECT * FROM users WHERE admin = 1</div>
+            </div>
+        </div>
+
+        <!-- LEVEL 9 - CHECKSUM -->
+        <div id="screenLevel9" class="screen">
+            <div class="content-box">
+                <h2 data-i18n="layer9_title">✓ LAYER 9: CHECKSUM - INTÉGRITÉ</h2>
+                <p data-i18n="layer9_desc">Calculate the checksum to verify data integrity.</p>
+                <p data-i18n="layer9_instruction">Sum all numbers and apply modulo 256. Enter the checksum to validate the file.</p>
+
+                <div style="background: var(--terminal-bg); border: 1px solid var(--secondary-color); border-radius: 5px; padding: 15px; margin: 20px 0;">
+                    <div style="font-size: 0.85rem; color: var(--dim-color); margin-bottom: 10px;" data-i18n="data_sequence">Data sequence:</div>
+                    <div style="font-size: 1.1rem; color: var(--primary-color); font-weight: bold; letter-spacing: 3px; word-break: break-all;" id="checksumData">45 67 89 12 34 56 78 90</div>
+                    <div style="font-size: 0.8rem; color: var(--dim-color); margin-top: 10px;">Formula: (sum of all numbers) % 256</div>
+                </div>
+
+                <input type="number" id="inputLevel9" data-i18n-placeholder="enter_checksum" placeholder="Enter checksum value..." autocomplete="off">
+            </div>
+
+            <div id="feedback9" class="feedback"></div>
+
+            <button onclick="level9.validate()" data-i18n="validate_checksum">VALIDATE CHECKSUM</button>
+            <button class="hint-btn" onclick="level9.showHint()" data-i18n="need_help">NEED HELP?</button>
+
+            <div class="hint-zone" id="hintZone9">
+                <div class="hint hidden" id="hint9a" data-i18n="hint9a">📍 Hint 1: Add all the numbers: 45 + 67 + 89 + 12 + 34 + 56 + 78 + 90</div>
+                <div class="hint hidden" id="hint9b" data-i18n="hint9b">📍 Hint 2: The sum is 471. Now apply modulo 256: 471 % 256 = 215. Wait, recalculate...</div>
+            </div>
+        </div>
+
+        <!-- LEVEL 10 - MODULAR MASTER-KEY -->
+        <div id="screenLevel10" class="screen">
+            <div class="content-box">
+                <h2>🔐 LAYER 10: THE MODULAR MASTER-KEY</h2>
+                <p>Trouvez le nombre unique entre 100 et 200 qui satisfait les 3 scanners de flux.</p>
+                <p>Entrez la Clé de Synchronisation : les ondes ne s’alignent que lorsque la valeur est correcte.</p>
+
+                <div class="scanner-grid">
+                    <div class="scanner-card">
+                        <div class="scanner-title">Scanner 1</div>
+                        <div class="scanner-rule">Reste <strong>2</strong> si divisé par <strong>3</strong></div>
+                    </div>
+                    <div class="scanner-card">
+                        <div class="scanner-title">Scanner 2</div>
+                        <div class="scanner-rule">Reste <strong>3</strong> si divisé par <strong>5</strong></div>
+                    </div>
+                    <div class="scanner-card">
+                        <div class="scanner-title">Scanner 3</div>
+                        <div class="scanner-rule">Reste <strong>2</strong> si divisé par <strong>7</strong></div>
+                    </div>
+                </div>
+
+                <canvas id="waveCanvas10" width="640" height="220" style="width:100%; max-width: 640px; height: 220px; margin: 20px auto; display:block; border:1px solid var(--secondary-color); border-radius:8px; background:#000;"></canvas>
+
+                <div style="margin: 20px 0; display: grid; gap: 12px;">
+                    <input type="number" id="syncKeyInput" min="100" max="200" placeholder="Clé de Synchronisation (100-200)" autocomplete="off" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--secondary-color); background:#111; color:#fff;">
+                    <button onclick="level10.validate()" id="level10ValidateButton">VALIDER LA CLÉ</button>
+                </div>
+
+                <div style="padding:15px; background:#111; border:1px solid var(--secondary-color); border-radius:8px; color:var(--dim-color); font-size:0.95rem;">
+                    <div>Range : <strong>100–200</strong></div>
+                    <div>Entrée actuelle : <strong id="currentKeyValue">?</strong></div>
+                </div>
+            </div>
+
+            <div id="feedback10" class="feedback"></div>
+
+            <button class="hint-btn" onclick="level10.showHint()">BESOIN D'AIDE ?</button>
+
+            <div class="hint-zone" id="hintZone10">
+                <div class="hint hidden" id="hint10a">📍 Hint 1 : Le nombre est un multiple de 7 auquel on ajoute 2. Testez les valeurs : 107, 114, 121, 128...</div>
+                <div class="hint hidden" id="hint10b">📍 Hint 2 : Il doit donner 2 avec 3, 3 avec 5 et 2 avec 7. Cherchez la valeur unique entre 100 et 200.</div>
+            </div>
+        </div>
+
         <!-- SUCCESS SCREEN -->
         <div id="screenSuccess" class="screen">
             <div class="success-screen">
@@ -856,24 +1212,24 @@
                 <h2 style="color: var(--primary-color); margin-bottom: 20px;" data-i18n="infiltration_successful">INFILTRATION SUCCESSFUL!</h2>
                 <p data-i18n="congratulations">Congratulations, recruit! You've accessed the system core and retrieved the TOP_SECRET.dat file.</p>
 
-                <div class="final-code" id="finalCode">ADMIN-2026</div>
-
-                <p style="color: var(--warning-color);" data-i18n="show_code">
-                    Show this code to the staff to unlock the candy box!
-                </p>
+                        <h2 style="color: var(--accent-color); margin-bottom: 20px; font-family: 'Courier New', monospace; letter-spacing: 0.2em;">BILAN DE SESSION</h2>
 
                 <div class="stats-grid">
                     <div class="stat-box">
                         <div class="stat-value" id="statTime">00:00</div>
-                        <div class="stat-label" data-i18n="total_time">Total Time</div>
+                        <div class="stat-label" data-i18n="elapsed_time">Temps écoulé</div>
                     </div>
                     <div class="stat-box">
                         <div class="stat-value" id="statHints">0</div>
-                        <div class="stat-label" data-i18n="hints_used">Hints Used</div>
+                        <div class="stat-label" data-i18n="hints_used">Indices utilisés</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value stat-score" id="statScore">10000</div>
+                        <div class="stat-label" data-i18n="final_score">Score final</div>
                     </div>
                 </div>
 
-                <button class="secondary" onclick="game.restart()" data-i18n="play_again">PLAY AGAIN</button>
+                <button class="secondary" onclick="game.restart()" data-i18n="reset_session">RÉINITIALISER</button>
             </div>
         </div>
 
@@ -935,6 +1291,64 @@
                 validate_configuration: "VALIDATE CONFIGURATION",
                 hint4a: "📍 Hint 1: For AND, activate both switches. For OR, one is enough. For NOT, leave it OFF.",
                 hint4b: "📍 Hint 2: Row 1: A1+B1 ON | Row 2: A2 or B2 ON | Row 3: A3 OFF",
+                layer5_title: "🧠 LAYER 5: MEMORY - FUITE MÉMOIRE",
+                layer5_desc: "A Simon Says challenge. Watch the sequence of blocks light up, then reproduce it.",
+                layer5_instruction: "Click the blocks in the correct order. The sequence gets longer each time!",
+                validate_sequence: "VALIDATE SEQUENCE",
+                sequence_correct: "✓ SEQUENCE MEMORIZED",
+                sequence_incorrect: "✗ SEQUENCE FAILED",
+                hint5a: "📍 Hint 1: Memorize the flashing pattern. Each new round adds one more block.",
+                hint5b: "📍 Hint 2: Click the blocks in the exact same order as they flashed. No mistakes allowed!",
+                layer6_title: "📡 LAYER 6: BINARY - MASQUE RÉSEAU",
+                layer6_desc: "Convert the IP address to binary notation or determine the network mask.",
+                layer6_instruction: "Convert the IP address to its binary form (e.g., 192.168.1.1 → 11000000101010000000000100000001).",
+                ip_address: "IP Address:",
+                enter_binary: "Enter binary form...",
+                validate_binary: "VALIDATE BINARY",
+                binary_correct: "✓ BINARY CONVERSION CORRECT",
+                binary_incorrect: "✗ BINARY CONVERSION INCORRECT",
+                hint6a: "📍 Hint 1: Convert each octet (number separated by dots) to 8-bit binary. 192 = 11000000",
+                hint6b: "📍 Hint 2: 168 = 10101000, 1 = 00000001. Concatenate them all without spaces.",
+                layer7_title: "🌊 LAYER 7: FREQUENCY - SIGNAL RADIO",
+                layer7_desc: "Adjust the amplitude and frequency sliders to match the target waveform.",
+                layer7_instruction: "Use the sliders to match your signal (blue) to the target signal (ghosted).",
+                amplitude: "Amplitude",
+                frequency: "Frequency",
+                validate_signal: "VALIDATE SIGNAL",
+                signal_correct: "✓ SIGNAL SYNCHRONIZED",
+                signal_incorrect: "✗ SIGNAL MISMATCH",
+                hint7a: "📍 Hint 1: The amplitude controls the height of the wave. The frequency controls how many cycles fit in the display.",
+                hint7b: "📍 Hint 2: Target amplitude is 1.5 and target frequency is 2. Match your signal to the ghosted reference.",
+                layer8_title: "💾 LAYER 8: SQL - INJECTION",
+                layer8_desc: "Simulate a database query. Execute SQL commands to extract the security key.",
+                layer8_instruction: "Enter a SQL query to extract the admin access key from the database.",
+                sample_query: "Sample: SELECT * FROM users WHERE admin = 1",
+                enter_sql_query: "Enter SQL query...",
+                execute_query: "EXECUTE QUERY",
+                query_executed: "✓ QUERY EXECUTED - KEY EXTRACTED",
+                query_failed: "✗ QUERY FAILED - INVALID SYNTAX",
+                hint8a: "📍 Hint 1: You need to extract data where admin = 1. Use a SELECT query with WHERE clause.",
+                hint8b: "📍 Hint 2: Try: SELECT * FROM users WHERE admin = 1",
+                layer9_title: "✓ LAYER 9: CHECKSUM - INTÉGRITÉ",
+                layer9_desc: "Calculate the checksum to verify data integrity.",
+                layer9_instruction: "Sum all numbers and apply modulo 256. Enter the checksum to validate the file.",
+                data_sequence: "Data sequence:",
+                enter_checksum: "Enter checksum value...",
+                validate_checksum: "VALIDATE CHECKSUM",
+                checksum_correct: "✓ CHECKSUM VERIFIED - DATA INTACT",
+                checksum_incorrect: "✗ CHECKSUM FAILED - DATA CORRUPTED",
+                hint9a: "📍 Hint 1: Add all the numbers: 45 + 67 + 89 + 12 + 34 + 56 + 78 + 90",
+                hint9b: "📍 Hint 2: The sum is 471. Now apply modulo 256: 471 % 256 = 215",
+                layer10_title: "🔐 LAYER 10: MFA - OVERRIDE FINAL",
+                layer10_desc: "Speed and precision test. Click the real security codes while ignoring fakes.",
+                layer10_instruction: "Click the CORRECT codes (green) while avoiding FAKE codes (red). Speed counts!",
+                mfa_instructions: "Security codes will appear briefly. Click the correct ones!",
+                mfa_score: "Score",
+                validate_mfa: "SUBMIT CODES",
+                mfa_correct: "✓ MFA OVERRIDE SUCCESSFUL",
+                mfa_incorrect: "✗ TOO MANY MISTAKES - TRY AGAIN",
+                hint10a: "📍 Hint 1: Green codes are real, red codes are fakes. Click the green ones only!",
+                hint10b: "📍 Hint 2: Codes appear briefly. You must click them quickly before they disappear. Only 1 mistake allowed!",
                 infiltration_successful: "INFILTRATION SUCCESSFUL!",
                 congratulations: "Congratulations, recruit! You've accessed the system core and retrieved the TOP_SECRET.dat file.",
                 show_code: "Show this code to the staff to unlock the candy box!",
@@ -1007,6 +1421,64 @@
                 validate_configuration: "VALIDER LA CONFIGURATION",
                 hint4a: "📍 Indice 1 : Pour ET, activez les deux interrupteurs. Pour OU, un seul suffit. Pour NON, laissez-le DÉSACTIVÉ.",
                 hint4b: "📍 Indice 2 : Ligne 1: A1+B1 ACTIF | Ligne 2: A2 ou B2 ACTIF | Ligne 3: A3 DÉSACTIVÉ",
+                layer5_title: "🧠 COUCHE 5 : MÉMOIRE - FUITE MÉMOIRE",
+                layer5_desc: "Un défi de type 'Simon Says'. Regardez la séquence de blocs s'illuminer, puis reproduisez-la.",
+                layer5_instruction: "Cliquez sur les blocs dans le bon ordre. La séquence devient plus longue à chaque fois !",
+                validate_sequence: "VALIDER LA SÉQUENCE",
+                sequence_correct: "✓ SÉQUENCE MÉMORISÉE",
+                sequence_incorrect: "✗ SÉQUENCE ÉCHOUÉE",
+                hint5a: "📍 Indice 1 : Mémorisez le motif clignotant. Chaque nouveau tour ajoute un bloc supplémentaire.",
+                hint5b: "📍 Indice 2 : Cliquez sur les blocs dans le même ordre qu'ils ont clignoté. Aucune erreur autorisée !",
+                layer6_title: "📡 COUCHE 6 : BINAIRE - MASQUE RÉSEAU",
+                layer6_desc: "Convertissez l'adresse IP en notation binaire ou déterminez le masque réseau.",
+                layer6_instruction: "Convertissez l'adresse IP en binaire (par ex. 192.168.1.1 → 11000000101010000000000100000001).",
+                ip_address: "Adresse IP :",
+                enter_binary: "Entrez la forme binaire...",
+                validate_binary: "VALIDER BINAIRE",
+                binary_correct: "✓ CONVERSION BINAIRE CORRECTE",
+                binary_incorrect: "✗ CONVERSION BINAIRE INCORRECTE",
+                hint6a: "📍 Indice 1 : Convertissez chaque octet (nombre séparé par des points) en binaire 8 bits. 192 = 11000000",
+                hint6b: "📍 Indice 2 : 168 = 10101000, 1 = 00000001. Concaténez-les tous sans espaces.",
+                layer7_title: "🌊 COUCHE 7 : FRÉQUENCE - SIGNAL RADIO",
+                layer7_desc: "Ajustez les curseurs d'amplitude et de fréquence pour correspondre à la forme d'onde cible.",
+                layer7_instruction: "Utilisez les curseurs pour faire correspondre votre signal (bleu) au signal cible (fantôme).",
+                amplitude: "Amplitude",
+                frequency: "Fréquence",
+                validate_signal: "VALIDER LE SIGNAL",
+                signal_correct: "✓ SIGNAL SYNCHRONISÉ",
+                signal_incorrect: "✗ DÉCALAGE DE SIGNAL",
+                hint7a: "📍 Indice 1 : L'amplitude contrôle la hauteur de l'onde. La fréquence contrôle le nombre de cycles dans l'affichage.",
+                hint7b: "📍 Indice 2 : L'amplitude cible est 1,5 et la fréquence cible est 2. Faites correspondre votre signal au signal fantôme.",
+                layer8_title: "💾 COUCHE 8 : SQL - INJECTION",
+                layer8_desc: "Simulez une requête de base de données. Exécutez des commandes SQL pour extraire la clé de sécurité.",
+                layer8_instruction: "Entrez une requête SQL pour extraire la clé d'accès administrateur de la base de données.",
+                sample_query: "Exemple : SELECT * FROM users WHERE admin = 1",
+                enter_sql_query: "Entrez la requête SQL...",
+                execute_query: "EXÉCUTER LA REQUÊTE",
+                query_executed: "✓ REQUÊTE EXÉCUTÉE - CLÉ EXTRAITE",
+                query_failed: "✗ REQUÊTE ÉCHOUÉE - SYNTAXE INVALIDE",
+                hint8a: "📍 Indice 1 : Vous devez extraire les données où admin = 1. Utilisez une requête SELECT avec une clause WHERE.",
+                hint8b: "📍 Indice 2 : Essayez : SELECT * FROM users WHERE admin = 1",
+                layer9_title: "✓ COUCHE 9 : CHECKSUM - INTÉGRITÉ",
+                layer9_desc: "Calculez le checksum pour vérifier l'intégrité des données.",
+                layer9_instruction: "Additionnez tous les nombres et appliquez modulo 256. Entrez le checksum pour valider le fichier.",
+                data_sequence: "Séquence de données :",
+                enter_checksum: "Entrez la valeur du checksum...",
+                validate_checksum: "VALIDER LE CHECKSUM",
+                checksum_correct: "✓ CHECKSUM VÉRIFIÉ - DONNÉES INTACTES",
+                checksum_incorrect: "✗ CHECKSUM ÉCHOUÉ - DONNÉES CORROMPUES",
+                hint9a: "📍 Indice 1 : Ajoutez tous les nombres : 45 + 67 + 89 + 12 + 34 + 56 + 78 + 90",
+                hint9b: "📍 Indice 2 : La somme est 471. Appliquez modulo 256 : 471 % 256 = 215",
+                layer10_title: "🔐 COUCHE 10 : MFA - OVERRIDE FINAL",
+                layer10_desc: "Test de vitesse et de précision. Cliquez sur les vrais codes de sécurité en ignorant les faux.",
+                layer10_instruction: "Cliquez sur les codes CORRECTS (verts) en évitant les codes FAUX (rouges). La vitesse compte !",
+                mfa_instructions: "Les codes de sécurité apparaîtront brièvement. Cliquez sur les bons !",
+                mfa_score: "Score",
+                validate_mfa: "SOUMETTRE LES CODES",
+                mfa_correct: "✓ MFA OVERRIDE RÉUSSI",
+                mfa_incorrect: "✗ TROP D'ERREURS - RÉESSAYEZ",
+                hint10a: "📍 Indice 1 : Les codes verts sont vrais, les codes rouges sont faux. Cliquez uniquement sur les verts !",
+                hint10b: "📍 Indice 2 : Les codes apparaissent brièvement. Vous devez cliquer rapidement avant qu'ils disparaissent. Une seule erreur autorisée !",
                 infiltration_successful: "INFILTRATION RÉUSSIE !",
                 congratulations: "Félicitations, recrue ! Vous avez accédé au cœur du système et récupéré le fichier TOP_SECRET.dat.",
                 show_code: "Montrez ce code au personnel pour débloquer la boîte à bonbons !",
@@ -1139,6 +1611,43 @@
                     'A3': false               // NOT: must be OFF to output ON
                 }
             },
+            level5: {
+                // Memory game sequence
+                initialSequenceLength: 3,
+                colors: ['red', 'blue', 'green', 'yellow']
+            },
+            level6: {
+                // IP to binary conversion
+                ipAddress: "192.168.1.1",
+                expectedBinary: "11000000101010000000000100000001"
+            },
+            level7: {
+                // Signal matching
+                targetAmplitude: 1.5,
+                targetFrequency: 2,
+                tolerance: 0.2
+            },
+            level8: {
+                // SQL injection
+                expectedKeywords: ['select', 'from', 'admin'],
+                correctAnswer: 'SECURITY_KEY_8X2P'
+            },
+            level9: {
+                // Checksum
+                dataSequence: [45, 67, 89, 12, 34, 56, 78, 90],
+                expectedChecksum: 215 // (45+67+89+12+34+56+78+90) % 256 = 471 % 256 = 215
+            },
+            level10: {
+                // Modular master-key
+                rangeMin: 100,
+                rangeMax: 200,
+                conditions: [
+                    { mod: 3, remainder: 2 },
+                    { mod: 5, remainder: 3 },
+                    { mod: 7, remainder: 2 }
+                ],
+                solution: 128
+            },
             // Final code to show to staff
             finalCode: "ADMIN-2026",
             // Maximum time in seconds (35 minutes)
@@ -1197,9 +1706,9 @@
 
             // Update progress bar
             updateProgress(level) {
-                const percent = (level / 4) * 100;
+                const percent = (level / 10) * 100;
                 document.getElementById('progressBar').style.width = percent + '%';
-                const levelLabel = currentLang === 'en' ? `Level ${level}/4` : `Niveau ${level}/4`;
+                const levelLabel = currentLang === 'en' ? `Level ${level}/10` : `Niveau ${level}/10`;
                 document.getElementById('progressLevel').textContent = levelLabel;
                 document.getElementById('progressPercent').textContent = Math.round(percent) + '%';
             },
@@ -1268,7 +1777,7 @@
 
             // Go to next level
             nextLevel() {
-                if (this.currentLevel < 4) {
+                if (this.currentLevel < 10) {
                     setTimeout(() => {
                         this.startLevel(this.currentLevel + 1);
                     }, 1000);
@@ -1284,6 +1793,10 @@
                 document.getElementById('finalCode').textContent = CONFIG.finalCode;
                 document.getElementById('statTime').textContent = this.getElapsedTimeDisplay();
                 document.getElementById('statHints').textContent = this.hintsUsed;
+
+                // Calculate final score: 10000 - 10*seconds - 500*hintsUsed, minimum 0
+                const score = Math.max(0, 10000 - (this.elapsedTime * 10) - (this.hintsUsed * 500));
+                document.getElementById('statScore').textContent = score.toLocaleString();
 
                 this.currentState = 'victory';
                 console.log("MISSION ACCOMPLISHED!");
@@ -1326,6 +1839,12 @@
                 level2.reset();
                 level3.reset();
                 level4.reset();
+                level5.reset();
+                level6.reset();
+                level7.reset();
+                level8.reset();
+                level9.reset();
+                level10.reset();
 
                 // Reset timer
                 this.startTime = Date.now();
@@ -1735,7 +2254,494 @@
             }
         };
 
+        function level1Init() { level1.init(); }
+        function level2Init() { level2.init(); }
+        function level3Init() { level3.init(); }
+        function level4Init() { level4.init(); }
+
         // ==========================================
+        // LEVEL 5 - MEMORY / SIMON SAYS
+        // ==========================================
+        const level5 = {
+            sequence: [],
+            playerSequence: [],
+            isPlayingSequence: false,
+            currentRound: 0,
+
+            init() {
+                this.sequence = [];
+                this.playerSequence = [];
+                this.isPlayingSequence = false;
+                this.currentRound = 0;
+                document.getElementById('hintZone5').classList.remove('visible');
+                document.getElementById('hint5a').className = 'hint hidden';
+                document.getElementById('hint5b').className = 'hint hidden';
+                this.startRound();
+            },
+
+            reset() {
+                this.sequence = [];
+                this.playerSequence = [];
+                this.isPlayingSequence = false;
+                this.currentRound = 0;
+            },
+
+            startRound() {
+                this.playerSequence = [];
+                const randomColor = Math.floor(Math.random() * 4);
+                this.sequence.push(randomColor);
+                this.currentRound++;
+
+                document.getElementById('level5Status').textContent = `Round ${this.currentRound}`;
+                this.playSequence();
+            },
+
+            playSequence() {
+                this.isPlayingSequence = true;
+                let delay = 500;
+
+                this.sequence.forEach((colorIndex, index) => {
+                    setTimeout(() => {
+                        this.flashBlock(colorIndex);
+                    }, delay + index * 600);
+                });
+
+                this.isPlayingSequence = false;
+            },
+
+            flashBlock(colorIndex) {
+                const colors = ['red', 'blue', 'green', 'yellow'];
+                const block = document.querySelector(`[data-color="${colors[colorIndex]}"]`);
+                block.classList.add('active');
+                setTimeout(() => block.classList.remove('active'), 300);
+            },
+
+            playerClick(colorIndex) {
+                if (this.isPlayingSequence) return;
+                
+                this.flashBlock(colorIndex);
+                this.playerSequence.push(colorIndex);
+
+                if (this.playerSequence[this.playerSequence.length - 1] !== this.sequence[this.playerSequence.length - 1]) {
+                    game.showFeedback(5, "✗ SEQUENCE FAILED", false);
+                    this.reset();
+                    this.init();
+                    return;
+                }
+
+                if (this.playerSequence.length === this.sequence.length) {
+                    if (this.currentRound >= 5) {
+                        game.showFeedback(5, "✓ SEQUENCE MEMORIZED", true);
+                        game.nextLevel();
+                    } else {
+                        setTimeout(() => this.startRound(), 1000);
+                    }
+                }
+            },
+
+            validate() {
+                if (this.sequence.length > 0 && this.playerSequence.length === this.sequence.length) {
+                    game.showFeedback(5, "✓ SEQUENCE MEMORIZED", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(5, "✗ SEQUENCE FAILED", false);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone5');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint5a').classList.contains('hidden')) {
+                    game.revealHint(5, 'a');
+                } else if (document.getElementById('hint5b').classList.contains('hidden')) {
+                    game.revealHint(5, 'b');
+                }
+            }
+        };
+
+        function level5Init() { level5.init(); }
+
+        // ==========================================
+        // LEVEL 6 - BINARY / IP CONVERSION
+        // ==========================================
+        const level6 = {
+            init() {
+                document.getElementById('inputLevel6').value = '';
+                document.getElementById('hintZone6').classList.remove('visible');
+                document.getElementById('hint6a').className = 'hint hidden';
+                document.getElementById('hint6b').className = 'hint hidden';
+                document.getElementById('ipDisplay').textContent = CONFIG.level6.ipAddress;
+            },
+
+            reset() {
+                this.init();
+            },
+
+            validate() {
+                const input = document.getElementById('inputLevel6').value.trim();
+
+                if (input === CONFIG.level6.expectedBinary) {
+                    game.showFeedback(6, "✓ BINARY CONVERSION CORRECT", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(6, "✗ BINARY CONVERSION INCORRECT", false);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone6');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint6a').classList.contains('hidden')) {
+                    game.revealHint(6, 'a');
+                } else if (document.getElementById('hint6b').classList.contains('hidden')) {
+                    game.revealHint(6, 'b');
+                }
+            }
+        };
+
+        function level6Init() { level6.init(); }
+
+        // ==========================================
+        // LEVEL 7 - FREQUENCY / SIGNAL WAVE
+        // ==========================================
+        const level7 = {
+            init() {
+                document.getElementById('sliderX').value = 1;
+                document.getElementById('sliderY').value = 1;
+                document.getElementById('sliderZ').value = 1;
+                document.getElementById('sliderXValue').textContent = '1';
+                document.getElementById('sliderYValue').textContent = '1';
+                document.getElementById('sliderZValue').textContent = '1';
+                document.getElementById('hintZone7').classList.remove('visible');
+                document.getElementById('hint7a').className = 'hint hidden';
+                document.getElementById('hint7b').className = 'hint hidden';
+                this.updateLogic();
+            },
+
+            reset() {
+                this.init();
+            },
+
+            updateLogic() {
+                const x = parseInt(document.getElementById('sliderX').value);
+                const y = parseInt(document.getElementById('sliderY').value);
+                const z = parseInt(document.getElementById('sliderZ').value);
+
+                document.getElementById('sliderXValue').textContent = x;
+                document.getElementById('sliderYValue').textContent = y;
+                document.getElementById('sliderZValue').textContent = z;
+
+                const result = this.calculateResult(x, y, z);
+                document.getElementById('currentResult').textContent = result;
+
+                this.highlightCodePath(x, y, z);
+            },
+
+            calculateResult(x, y, z) {
+                let result;
+                if (x > 5) {
+                    if (y < 4) {
+                        if (z === 2) { result = 10; }
+                        else { result = 8; }
+                    } else {
+                        if (z > 7) { result = 20; }
+                        else { result = 12; }
+                    }
+                } else {
+                    if (y >= 4) {
+                        if (z < 5) { result = 5; }
+                        else { result = 15; }
+                    } else {
+                        if (z === 9) { result = 7; }
+                        else { result = 3; }
+                    }
+                }
+                return result;
+            },
+
+            highlightCodePath(x, y, z) {
+                // Clear all highlights
+                for (let i = 1; i <= 13; i++) {
+                    document.getElementById(`codeLine${i}`).classList.remove('active');
+                }
+
+                // Highlight the active path
+                if (x > 5) {
+                    document.getElementById('codeLine1').classList.add('active');
+                    if (y < 4) {
+                        document.getElementById('codeLine2').classList.add('active');
+                        if (z === 2) {
+                            document.getElementById('codeLine3').classList.add('active');
+                        } else {
+                            document.getElementById('codeLine4').classList.add('active');
+                        }
+                    } else {
+                        document.getElementById('codeLine5').classList.add('active');
+                        document.getElementById('codeLine6').classList.add('active');
+                    }
+                } else {
+                    document.getElementById('codeLine7').classList.add('active');
+                    if (y >= 4) {
+                        document.getElementById('codeLine8').classList.add('active');
+                        if (z < 5) {
+                            document.getElementById('codeLine9').classList.add('active');
+                        } else {
+                            document.getElementById('codeLine9').classList.add('active');
+                        }
+                    } else {
+                        document.getElementById('codeLine10').classList.add('active');
+                        document.getElementById('codeLine11').classList.add('active');
+                    }
+                    document.getElementById('codeLine12').classList.add('active');
+                }
+                document.getElementById('codeLine13').classList.add('active');
+            },
+
+            validate() {
+                const x = parseInt(document.getElementById('sliderX').value);
+                const y = parseInt(document.getElementById('sliderY').value);
+                const z = parseInt(document.getElementById('sliderZ').value);
+                const result = this.calculateResult(x, y, z);
+
+                if (result === 15) {
+                    game.showFeedback(7, "✓ LOGIC PATH COMPLETED", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(7, "✗ RESULT INCORRECT", false);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone7');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint7a').classList.contains('hidden')) {
+                    game.revealHint(7, 'a');
+                } else if (document.getElementById('hint7b').classList.contains('hidden')) {
+                    game.revealHint(7, 'b');
+                }
+            }
+        };
+
+        function level7Init() { level7.init(); }
+
+        // ==========================================
+        // LEVEL 8 - SQL INJECTION
+        // ==========================================
+        const level8 = {
+            init() {
+                document.getElementById('inputLevel8').value = '';
+                document.getElementById('hintZone8').classList.remove('visible');
+                document.getElementById('hint8a').className = 'hint hidden';
+                document.getElementById('hint8b').className = 'hint hidden';
+            },
+
+            reset() {
+                this.init();
+            },
+
+            validate() {
+                const input = document.getElementById('inputLevel8').value.trim().toLowerCase();
+
+                const hasSelect = input.includes('select');
+                const hasFrom = input.includes('from');
+                const hasAdmin = input.includes('admin') && input.includes('1');
+
+                if (hasSelect && hasFrom && hasAdmin) {
+                    game.showFeedback(8, "✓ QUERY EXECUTED - KEY EXTRACTED", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(8, "✗ QUERY FAILED - INVALID SYNTAX", false);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone8');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint8a').classList.contains('hidden')) {
+                    game.revealHint(8, 'a');
+                } else if (document.getElementById('hint8b').classList.contains('hidden')) {
+                    game.revealHint(8, 'b');
+                }
+            }
+        };
+
+        function level8Init() { level8.init(); }
+
+        // ==========================================
+        // LEVEL 9 - CHECKSUM
+        // ==========================================
+        const level9 = {
+            init() {
+                document.getElementById('inputLevel9').value = '';
+                document.getElementById('hintZone9').classList.remove('visible');
+                document.getElementById('hint9a').className = 'hint hidden';
+                document.getElementById('hint9b').className = 'hint hidden';
+                const dataStr = CONFIG.level9.dataSequence.join(' ');
+                document.getElementById('checksumData').textContent = dataStr;
+            },
+
+            reset() {
+                this.init();
+            },
+
+            validate() {
+                const input = parseInt(document.getElementById('inputLevel9').value);
+
+                if (input === CONFIG.level9.expectedChecksum) {
+                    game.showFeedback(9, "✓ CHECKSUM VERIFIED - DATA INTACT", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(9, "✗ CHECKSUM FAILED - DATA CORRUPTED", false);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone9');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint9a').classList.contains('hidden')) {
+                    game.revealHint(9, 'a');
+                } else if (document.getElementById('hint9b').classList.contains('hidden')) {
+                    game.revealHint(9, 'b');
+                }
+            }
+        };
+
+        function level9Init() { level9.init(); }
+
+        // ==========================================
+        // LEVEL 10 - MODULAR MASTER-KEY
+        // ==========================================
+        const level10 = {
+            conditions: [
+                { mod: 3, remainder: 2, color: 'rgba(0,255,136,0.95)' },
+                { mod: 5, remainder: 3, color: 'rgba(0,130,255,0.95)' },
+                { mod: 7, remainder: 2, color: 'rgba(255,110,220,0.95)' }
+            ],
+            rangeMin: 100,
+            rangeMax: 200,
+            solution: 128,
+
+            init() {
+                const input = document.getElementById('syncKeyInput');
+                input.value = '';
+                input.oninput = () => this.updateDisplay(input.value);
+                document.getElementById('currentKeyValue').textContent = '?';
+                document.getElementById('hintZone10').classList.remove('visible');
+                document.getElementById('hint10a').className = 'hint hidden';
+                document.getElementById('hint10b').className = 'hint hidden';
+                document.getElementById('feedback10').className = 'feedback';
+                this.drawWaves(null);
+            },
+
+            reset() {
+                this.init();
+            },
+
+            updateDisplay(value) {
+                const number = parseInt(value, 10);
+                document.getElementById('currentKeyValue').textContent = value === '' ? '?' : value;
+                this.drawWaves(Number.isNaN(number) ? null : number);
+            },
+
+            isCorrect(value) {
+                return value >= this.rangeMin && value <= this.rangeMax && this.conditions.every(cond => value % cond.mod === cond.remainder);
+            },
+
+            validate() {
+                const input = document.getElementById('syncKeyInput').value.trim();
+                const guess = parseInt(input, 10);
+
+                if (!input || Number.isNaN(guess)) {
+                    game.showFeedback(10, "✗ CLÉ INVALIDE", false);
+                    return;
+                }
+
+                if (this.isCorrect(guess)) {
+                    game.showFeedback(10, "✓ MASTER-KEY SYNCHRONIZED", true);
+                    game.nextLevel();
+                } else {
+                    game.showFeedback(10, "✗ CLÉ INCORRECTE", false);
+                    this.drawWaves(guess);
+                }
+            },
+
+            drawWaves(value) {
+                const canvas = document.getElementById('waveCanvas10');
+                const ctx = canvas.getContext('2d');
+                const width = canvas.offsetWidth || canvas.width;
+                const height = canvas.offsetHeight || canvas.height;
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                canvas.style.width = `${width}px`;
+                canvas.style.height = `${height}px`;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                ctx.clearRect(0, 0, width, height);
+
+                ctx.fillStyle = '#020202';
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+                ctx.lineWidth = 1;
+                for (let x = 0; x <= width; x += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y <= height; y += 40) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                }
+
+                const allMatch = typeof value === 'number' && this.isCorrect(value);
+                const centerY = height / 2;
+                const amplitude = height / 5;
+                const waveFrequency = 2.2;
+
+                this.conditions.forEach((cond, index) => {
+                    const phaseOffset = allMatch ? 0 : (index + 1) * 0.8;
+                    ctx.strokeStyle = cond.color;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    for (let x = 0; x <= width; x += 2) {
+                        const phase = (x / width) * Math.PI * 2 * waveFrequency + phaseOffset;
+                        const y = centerY + Math.sin(phase) * amplitude;
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                });
+
+                if (allMatch) {
+                    ctx.fillStyle = 'rgba(0,255,130,0.2)';
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '16px Courier New';
+                    ctx.fillText('SYNCHRONISATION ATTEINTE', 18, 28);
+                }
+            },
+
+            showHint() {
+                const zone = document.getElementById('hintZone10');
+                zone.classList.add('visible');
+
+                if (document.getElementById('hint10a').classList.contains('hidden')) {
+                    game.revealHint(10, 'a');
+                } else if (document.getElementById('hint10b').classList.contains('hidden')) {
+                    game.revealHint(10, 'b');
+                }
+            }
+        };
+
+        function level10Init() { level10.init(); }
         // GAME INITIALIZATION
         // ==========================================
         window.onload = () => {
